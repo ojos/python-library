@@ -62,7 +62,7 @@ class InstanceMetadata(object):
         if not 'tags' in self._once:
             try:
                 filters = [{'Name': 'instance-id', 'Values': [self.instance_id]}]
-                res = self.client.describe_instances(Filters=filters)
+                res = self._client.describe_instances(Filters=filters)
                 self._tags.update({t['Key']: t['Value']
                                    for t in res['Reservations'][0]['Instances'][0]['Tags']})
                 self._once.append('tags')
