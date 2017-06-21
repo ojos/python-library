@@ -23,8 +23,12 @@ def time_from_s(s):
         dt = dt + td
     return dt
 
-def now():
-    return time_to_i(datetime.datetime.now())
+def now(microsecond=False):
+    dt = datetime.datetime.now()
+    _now = time_to_i(datetime.datetime.now())
+    if microsecond:
+        _now = int(_now * 1000 + dt.microsecond / 1000)
+    return _now
 
 def lazy_loader(name):
     try:
