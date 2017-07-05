@@ -14,6 +14,7 @@ def signature(channel_secret, msg):
     return signature
 
 def access_token(client_id, client_secret):
+    url = 'https://api.line.me/v2/oauth/accessToken'
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     payload = {'grant_type': 'client_credentials',
                'client_id': client_id,
