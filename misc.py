@@ -5,11 +5,16 @@ import base64
 import datetime
 import time
 
+import pytz
+
+
 def time_to_i(dt):
     return int(time.mktime(dt.timetuple()))
 
+
 def time_from_i(i):
     return datetime.datetime.fromtimestamp(i)
+
 
 def time_from_s(s):
     dt = datetime.datetime.strptime(
@@ -23,12 +28,18 @@ def time_from_s(s):
         dt = dt + td
     return dt
 
+
 def now(microsecond=False):
     dt = datetime.datetime.now()
     _now = time_to_i(datetime.datetime.now())
     if microsecond:
         _now = int(_now * 1000 + dt.microsecond / 1000)
     return _now
+
+
+def add_tz(dt, zone='UTC'):
+    return pytz.timezone(zone).localize(dt)
+
 
 def lazy_loader(name):
     try:
