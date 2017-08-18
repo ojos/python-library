@@ -41,6 +41,10 @@ def add_tz(dt, zone='UTC'):
     return pytz.timezone(zone).localize(dt)
 
 
+def as_tz(dt, zone='Asia/Tokyo'):
+    return dt.astimezone(pytz.timezone(zone))
+
+
 def lazy_loader(name):
     try:
         mod = __import__(name)
