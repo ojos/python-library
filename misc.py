@@ -37,11 +37,9 @@ def now(microsecond=False):
     return _now
 
 
-def add_tz(dt, zone='UTC'):
-    return pytz.timezone(zone).localize(dt)
-
-
-def as_tz(dt, zone='Asia/Tokyo'):
+def as_tz(dt, zone='Asia/Tokyo', base_zone='UTC'):
+    if dt.tzinfo is None:
+        dt = pytz.timezone(base_zone).localize(dt)
     return dt.astimezone(pytz.timezone(zone))
 
 
