@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, print_function, absolute_import, unicode_literals
 
-import logging
 import time
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+from logging import getLogger, INFO
+
+logger = getLogger(__name__)
+logger.setLevel(INFO)
 
 def retry_handler(tries_remaining, exception, delay):
     logger.warning("Caught '%s', %d tries remaining, sleeping for %s seconds",
                    exception, tries_remaining, delay)
 
 
-def retries(max_tries=3, delay=1, backoff=2, exceptions=(Exception,), hook=None):
+def retries(max_tries=3, delay=1, backoff=2, exceptions=(Exception,), hook=retry_handler):
     def dec(func):
         def f2(*args, **kwargs):
             mydelay = delay
@@ -33,3 +34,14 @@ def retries(max_tries=3, delay=1, backoff=2, exceptions=(Exception,), hook=None)
                     break
         return f2
     return dec
+
+def error_catch(error_func, exception=(Exception,)):
+    def _error_response(func):
+        def wrapper(self, *args, **kwargs):
+            try:
+                return func(self, *args, **kwargs)
+            except exceptions as e:
+                logger.exception('Error %s', e)
+                return error_func(exception)
+        return wrapper
+    return _error_response
