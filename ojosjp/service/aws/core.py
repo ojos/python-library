@@ -22,7 +22,7 @@ def get_client(service_name, aws_access_key_id=None, aws_secret_access_key=None,
 
     session = Session(aws_access_key_id=aws_access_key_id,
                       aws_secret_access_key=aws_secret_access_key,
-                      region_name=_region_name)
+                      region_name=region_name)
     logger.info('SET session=%s', '{}'.format(session.__dict__))
 
     client = session.client(service_name)
