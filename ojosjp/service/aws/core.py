@@ -17,7 +17,7 @@ def get_client(service_name, aws_access_key_id=None, aws_secret_access_key=None,
     logger.info('INPUT service_name=%s, aws_access_key_id=%s, aws_secret_access_key=%s, region_name=%s',
                 service_name, aws_access_key_id, aws_secret_access_key, region_name)
 
-    region_name = DEFAULT_REGION if region_name is None else None
+    region_name = DEFAULT_REGION if region_name is None else region_name
     logger.info('SET region_name=%s', region_name)
 
     session = Session(aws_access_key_id=aws_access_key_id,
