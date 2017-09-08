@@ -8,7 +8,7 @@ from oauth2client.client import OAuth2WebServerFlow, OAuth2Credentials
 
 logger = getLogger(__name__)
 
-class Client(object):
+class Certification(object):
     CREDENTIALS_JSON_TEMPLATE =\
         ('{'
          '"_module": "oauth2client.client",'
