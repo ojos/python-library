@@ -50,7 +50,7 @@ class S3(object):
         obj = self._client.get_object(Bucket=self._bucket,
                                       Key=key)
 
-        logger.info('RETURN %s', '{}'.format(obj.__dict__))
+        logger.info('RETURN %s', '{}'.format(obj))
         logger.info('END get_object')
 
     def _expand_text(self, context):
@@ -99,7 +99,7 @@ class S3(object):
             kwargs['ContentEncoding'] = 'gzip'
         res = self._client.put_object(**kwargs)
 
-        logger.info('RETURN %s', '{}'.format(res.__dict__))
+        logger.info('RETURN %s', '{}'.format(res))
         logger.info('END put_object')
         return res
 
@@ -113,6 +113,6 @@ class S3(object):
                                 Bucket=self._bucket,
                                 Key=target_key)
 
-        logger.info('RETURN %s', '{}'.format(res.__dict__))
+        logger.info('RETURN %s', '{}'.format(res))
         logger.info('END put_object')
         return res

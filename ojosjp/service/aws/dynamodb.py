@@ -70,7 +70,7 @@ class DynamoDB(object):
         res = self._client.put_item(TableName=self._table,
                                     Item=self.serializer.serialize(item)['M'])
 
-        logger.info('SET %s', '{}'.format(res.__dict__))
+        logger.info('SET %s', '{}'.format(res))
         logger.info('END put_item')
 
     @retries()
@@ -81,7 +81,7 @@ class DynamoDB(object):
         res = self._client.delete_item(TableName=self._table,
                                        Key=key)
 
-        logger.info('SET %s', '{}'.format(res.__dict__))
+        logger.info('SET %s', '{}'.format(res))
         logger.info('END delete_item')
 
     @retries()
@@ -98,10 +98,10 @@ class DynamoDB(object):
             kwargs['Limit'] = limit
 
         res = self._client.scan(**kwargs)
-        logger.info('SET %s', '{}'.format(res.__dict__))
+        logger.info('SET %s', '{}'.format(res))
 
         res['Items'] = [self.deserializer.deserialize({'M': item}) for item in res['Items']]
 
-        logger.info('RETURN %s', '{}'.format(res.__dict__))
+        logger.info('RETURN %s', '{}'.format(res))
         logger.info('END scan')
         return res

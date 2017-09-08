@@ -33,7 +33,7 @@ class Messaging(object):
 
         res = self._client.reply_message(reply_token, messages)
 
-        logger.info('SET res=%s', '{}'.format(res.__dict__))
+        logger.info('SET res=%s', '{}'.format(res))
         logger.info('END reply_message')
 
     @retries()
@@ -43,5 +43,5 @@ class Messaging(object):
 
         res = self._client.push_message(to, messages)
 
-        logger.info('SET res=%s', '{}'.format(res.__dict__))
+        logger.info('SET res=%s', '{}'.format(res))
         logger.info('END push_message')

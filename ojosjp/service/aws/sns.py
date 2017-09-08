@@ -71,7 +71,7 @@ kwargs : %(kwargs)s
                                    Subject=subject,
                                    Message=message)
 
-        logger.info('SET res=%s', '{}'.format(res.__dict__))
+        logger.info('SET res=%s', '{}'.format(res))
         logger.info('END publish')
 
     def miss(self, code, message, **kwargs):

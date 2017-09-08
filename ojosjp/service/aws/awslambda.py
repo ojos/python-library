@@ -46,6 +46,6 @@ class Lambda(object):
                                   InvocationType=invocation_type,
                                   Payload=json.dumps(payload))
 
-        logger.info('RETURN %s', '{}'.format(res.__dict__))
+        logger.info('RETURN %s', '{}'.format(res))
         logger.info('END invoke')
         return res

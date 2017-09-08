@@ -87,7 +87,7 @@ class InstanceMetadata(object):
             try:
                 filters = [{'Name': 'instance-id', 'Values': [self.instance_id]}]
                 res = self._client.describe_instances(Filters=filters)
-                logger.info('SET res=%s', '{}'.format(res.__dict__))
+                logger.info('SET res=%s', '{}'.format(res))
                 self._tags.update({t['Key']: t['Value']
                                    for t in res['Reservations'][0]['Instances'][0]['Tags']})
                 self._once.append('tags')
