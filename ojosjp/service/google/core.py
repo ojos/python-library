@@ -63,23 +63,28 @@ class Certification(object):
         logger.info('START service')
         if self._service is None:
             http_auth = self.credentials.authorize(httplib2.Http())
-            self._service = build('oauth2', 'v2', http=http_auth)
+            self._service = build(self.service_name, self.service_version, http=http_auth)
         logger.info('RETURN %s', '{}'.format(self._service))
         logger.info('END service')
         return self._service
 
 
     def __init__(self, client_id, client_secret, scope, redirect_uri,
+                 service_name='oauth2', service_version='v2',
                  access_token=None, refresh_token=None, token_expiry=None):
         logger.info('START __init__')
         self.client_id = client_id
         self.client_secret = client_secret
         self.scope = scope
         self.redirect_uri = redirect_uri
+        self.service_name = service_name
+        self.service_version = service_version
         logger.info('INPUT self.client_id=%s', self.client_id)
         logger.info('INPUT self.client_secret=%s', self.client_secret)
         logger.info('INPUT self.scope=%s', self.scope)
         logger.info('INPUT self.redirect_uri=%s', self.redirect_uri)
+        logger.info('INPUT self.service_name=%s', self.service_name)
+        logger.info('INPUT self.service_version=%s', self.service_version)
 
         if None not in (access_token, refresh_token, token_expiry):
             self.access_token = access_token
@@ -136,9 +141,11 @@ class Certification(object):
         logger.info('END _get_credentials_by_token')
         return credentials
 
-    def get_service(self, code):
+    def get_service(self, code, service_name='oauth2', service_version='v2'):
         logger.info('START get_service')
         self._get_credentials_by_code(code)
+        self.service_name = service_name
+        self.service_version = service_version
         logger.info('RETURN %s', '{}'.format(self.service))
         logger.info('END get_service')
         return self.service
