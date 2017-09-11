@@ -141,11 +141,15 @@ class Certification(object):
         logger.info('END _get_credentials_by_token')
         return credentials
 
-    def get_service(self, code, service_name='oauth2', service_version='v2'):
+    def get_service(self, code, service_name=None, service_version='v2'):
         logger.info('START get_service')
         self._get_credentials_by_code(code)
-        self.service_name = service_name
-        self.service_version = service_version
+        if service_name is not None:
+            self.service_name = service_name
+            logger.info('SET self.service_name=%s', self.service_name)
+        if service_version is not None:
+            self.service_version = service_version
+            logger.info('SET self.service_version=%s', self.service_version)
         logger.info('RETURN %s', '{}'.format(self.service))
         logger.info('END get_service')
         return self.service
