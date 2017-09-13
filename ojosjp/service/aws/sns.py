@@ -6,13 +6,12 @@ import json
 import sys
 import traceback
 
-from logging import getLogger, INFO
+from logging import getLogger
 
 from ojosjp.misc import time_from_i
 from ojosjp.service.aws.core import get_client
 
-logger = getLogger()
-logger.setLevel(INFO)
+logger = getLogger(__name__)
 
 class SNS(object):
     ERROR_SUBJECT = 'ERROR : %(resource_path)s %(code)s %(message)s'

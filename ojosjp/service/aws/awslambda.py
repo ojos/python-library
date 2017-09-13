@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, print_function, absolute_import, unicode_literals
 
-import logging
 import json
 import time
+from logging import getLogger
 
 from ojosjp.decorator import retries
 from ojosjp.service.aws.core import get_client
 
 FALID_INVOKE = 'FAILD INVOKE'
 
-logger = getLogger()
-logger.setLevel(INFO)
+logger = getLogger(__name__)
 
 class Lambda(object):
     _client = None

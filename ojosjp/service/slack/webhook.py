@@ -4,11 +4,9 @@ from __future__ import division, print_function, absolute_import, unicode_litera
 import json
 import requests
 
-from logging import getLogger, INFO
+from logging import getLogger
 
 logger = getLogger(__name__)
-logger.setLevel(INFO)
-
 
 class Channel(object):
 

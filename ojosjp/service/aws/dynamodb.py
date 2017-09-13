@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, print_function, absolute_import, unicode_literals
 
-from logging import getLogger, INFO
+from logging import getLogger
 
 from boto3.dynamodb.types import TypeDeserializer, TypeSerializer
 
@@ -12,8 +12,7 @@ FALID_INSERT_TO_DYNAMODB = 'FAILD INSERT TO DYNAMODB'
 FALID_DELETE_TO_DYNAMODB = 'FAILD DELETE TO DYNAMODB'
 FALID_SCAN = 'FAILD SCAN'
 
-logger = getLogger()
-logger.setLevel(INFO)
+logger = getLogger(__name__)
 
 class DynamoDB(object):
     _client = None

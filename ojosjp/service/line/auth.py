@@ -6,10 +6,9 @@ import hashlib
 import hmac
 import requests
 
-from logging import getLogger, INFO
+from logging import getLogger
 
 logger = getLogger(__name__)
-logger.setLevel(INFO)
 
 OAUTH_URL = 'https://api.line.me/v2/oauth/accessToken'
 

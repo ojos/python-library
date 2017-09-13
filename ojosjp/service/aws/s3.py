@@ -3,7 +3,7 @@ from __future__ import division, print_function, absolute_import, unicode_litera
 
 import gzip
 
-from logging import getLogger, INFO
+from logging import getLogger
 
 try:
     from io import BytesIO
@@ -17,8 +17,7 @@ FALID_GET_OBJECT = 'FAILD GET OBJECT'
 FAILD_PUT_OBJECT = 'FAILD PUT OBJECT'
 FALID_COPY_OBJECT = 'FAILD COPY'
 
-logger = getLogger()
-logger.setLevel(INFO)
+logger = getLogger(__name__)
 
 class S3(object):
     S3_ACL = 'public-read'

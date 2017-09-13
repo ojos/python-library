@@ -31,6 +31,7 @@ class Certification(object):
          '}')
     SERVICE_NAME = 'oauth2'
     SERVICE_VERSION = 'v2'
+    # https://developers.google.com/identity/protocols/googlescopes#oauth2v2
     SERVICE_SCOPES = {'plus.login': 'https://www.googleapis.com/auth/plus.login',
                       'plus.me': 'https://www.googleapis.com/auth/plus.me',
                       'userinfo.email': 'https://www.googleapis.com/auth/userinfo.email',

@@ -8,7 +8,7 @@ import re
 import requests
 import sys
 
-from logging import getLogger, INFO
+from logging import getLogger
 
 from botocore.client import BaseClient
 
@@ -21,7 +21,6 @@ DEFAULT_INSTANCE_ID = 'localhost'
 DEFAULT_PUBLIC_IP = '127.0.0.1'
 
 logger = getLogger(__name__)
-logger.setLevel(INFO)
 
 class InstanceMetadata(object):
     # EC2_USER_DATA_URL = 'http://169.254.169.254/latest/user-data/'

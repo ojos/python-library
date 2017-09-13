@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, print_function, absolute_import, unicode_literals
 
-from logging import getLogger, INFO
+from logging import getLogger
 
 from linebot import HttpClient, LineBotApi, RequestsHttpClient
 from linebot.exceptions import LineBotApiError
@@ -9,7 +9,6 @@ from linebot.exceptions import LineBotApiError
 from ojosjp.decorator import retries
 
 logger = getLogger(__name__)
-logger.setLevel(INFO)
 
 class Messaging(object):
     _client = None

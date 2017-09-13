@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, print_function, absolute_import, unicode_literals
 
-from logging import getLogger, INFO
+from logging import getLogger
 
 from boto3.session import Session
 
 DEFAULT_REGION = 'ap-northeast-1'
 
 logger = getLogger(__name__)
-logger.setLevel(INFO)
-
 
 def get_client(service_name, aws_access_key_id=None, aws_secret_access_key=None,
                region_name=None):
