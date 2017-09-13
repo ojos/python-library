@@ -40,11 +40,11 @@ class Certification(object):
                       'userinfo.profile': 'https://www.googleapis.com/auth/userinfo.profile'}
 
     _flow = None
-    _credentials = None
     _service = None
     _service_name = None
     _service_version = None
     _scopes = None
+    _credentials = None
 
     @property
     def flow(self):
@@ -60,17 +60,10 @@ class Certification(object):
         return self._flow
 
     @property
-    def credentials(self):
-        logger.info('START credentials')
-        logger.info('RETURN %s', '{}'.format(self._credentials))
-        logger.info('END credentials')
-        return self._credentials
-
-    @property
     def service(self):
         logger.info('START service')
         if self._service is None:
-            http_auth = self.credentials.authorize(httplib2.Http())
+            http_auth = self._credentials.authorize(httplib2.Http())
             self._service = build(self.service_name, self.service_version, http=http_auth)
         logger.info('RETURN %s', '{}'.format(self._service))
         logger.info('END service')
@@ -105,15 +98,15 @@ class Certification(object):
 
     @property
     def access_token(self):
-        return self.credentials.access_token
+        return self._credentials.access_token
 
     @property
     def refresh_token(self):
-        return self.credentials.refresh_token
+        return self._credentials.refresh_token
 
     @property
     def token_expiry(self):
-        return self.credentials.token_expiry.strftime('%Y-%m-%dT%H:%M:%SZ')
+        return self._credentials.token_expiry.strftime('%Y-%m-%dT%H:%M:%SZ')
 
     def __init__(self, client_id, client_secret, redirect_uri,
                  service_name=None, service_version=None, scopes=None,
@@ -133,9 +126,9 @@ class Certification(object):
         logger.info('INPUT self._scopes=%s', self._scopes)
 
         if None not in (access_token, refresh_token, token_expiry):
-            self._credentials = self._get_credentials_by_token(access_token=access_token,
-                                                               refresh_token=refresh_token,
-                                                               token_expiry=token_expiry)
+            self._get_credentials_by_token(access_token=access_token,
+                                           refresh_token=refresh_token,
+                                           token_expiry=token_expiry)
 
         logger.info('END __init__')
 
@@ -159,9 +152,7 @@ class Certification(object):
         logger.info('START _get_credentials_by_code')
         logger.info('INPUT code=%s', code)
         self._credentials = self._refresh_access_token(self.flow.step2_exchange(code))
-        logger.info('RETURN %s', '{}'.format(self.credentials))
         logger.info('END _get_credentials_by_code')
-        return self.credentials
 
     def _get_credentials_by_token(self, access_token, refresh_token, token_expiry):
         logger.info('START _get_credentials_by_token')
@@ -174,9 +165,7 @@ class Certification(object):
                                                  'token_expiry': token_expiry}
         logger.info('SET json=%s', json)
         self._credentials = self._refresh_access_token(OAuth2Credentials.from_json(json))
-        logger.info('RETURN %s', '{}'.format(self._credentials))
         logger.info('END _get_credentials_by_token')
-        return self.credentials
 
     def get_service(self, code=None, access_token=None, refresh_token=None, token_expiry=None,
                     service_name=None, service_version=None, scopes=None):
