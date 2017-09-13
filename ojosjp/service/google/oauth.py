@@ -6,8 +6,6 @@ from logging import getLogger
 from apiclient.discovery import build
 from oauth2client.client import OAuth2WebServerFlow, OAuth2Credentials
 
-from exception import GoogleException
-
 logger = getLogger(__name__)
 
 class Certification(object):
