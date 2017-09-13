@@ -17,7 +17,7 @@ def retries(max_tries=3, delay=1, backoff=2, exceptions=(Exception,), hook=retry
     def dec(func):
         def f2(*args, **kwargs):
             mydelay = delay
-            tries = range(max_tries)
+            tries = list(range(max_tries))
             tries.reverse()
             for tries_remaining in tries:
                 try:
