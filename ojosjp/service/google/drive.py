@@ -45,6 +45,81 @@ class Drive(Certification):
         logger.info('END scopes')
         return self._scopes
 
+    def about(self):
+        return self.service.about().get(fields='user').execute()['user']
+
+
+class File(object):
+    UPLOAD_TYPES = ('media', 'multipart', 'resumable')
+    FILE_SPACES = ('drive', 'appDataFolder')
+
+    service = None
+
+    def __init__(self, service):
+        self.service = service
+
+    def copy(self, file_id, body):
+        return self.service.files().copy(fileId=file_id,
+                                         body=body).execute()
+
+    def create(self, upload_type, body):
+        return self.service.files().create(fileId=file_id,
+                                           uploadType=upload_type,
+                                           body=body).execute()
+
+    def empty_trash(self):
+        return self.service.files().emptyTrash().execute()
+
+    def export(self, file_id, mime_type):
+        return self.service.files().export(fileId=file_id,
+                                           mimeType=mime_type).execute()
+
+    def generate_ids(self, count=10, space=GENERATE_IDS_SPACES[0]):
+        return self.service.files().generateIds(count=count,
+                                                space=space).execute()
+
+    def get(self, file_id):
+        return self.service.files().get(fileId=file_id).execute()
+
+    def list(self, file_id):
+        return self.service.files().get(fileId=file_id).execute()
+
+    def update(self):
+        logger.error('Unimplemented')
+
+
+class Permission(object):
+    PERMISSION_TYPES = ('user', 'group', 'domain', 'anyone')
+    PERMISSION_ROLES = ('reader', 'commenter', 'writer', 'owner', 'organizer')
+
+    service = None
+
+    def __init__(self, service):
+        self.service = service
+
+    def create(self, file_id, body, send_notification_email=False):
+        return self.service.permissions().create(fileId=file_id,
+                                                 sendNotificationEmail=send_notification_email,
+                                                 body=body).execute()
+
+    def delete(self, file_id, permission_id):
+        return self.service.permissions().delete(fileId=file_id,
+                                                 permissionId=permission_id).execute()
+
+    def get(self, file_id, permission_id):
+        return self.service.permissions().get(fileId=file_id,
+                                              permissionId=permission_id).execute()
+
+    def list(self, file_id, page_size=100, page_token=None):
+        return self.service.permissions().list(fileId=file_id,
+                                               pageSize=page_size,
+                                               pageToken=page_token).execute()
+
+    def update(self, file_id, permission_id, body, transfer_ownership=False):
+        return self.service.permissions().update(fileId=file_id,
+                                                 permissionId=permission_id,
+                                                 body=body,
+                                                 transferOwnership=transfer_ownership).execute()
 
 
 class Channel(object):
