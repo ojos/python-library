@@ -74,7 +74,7 @@ class File(object):
         return self.service.files().export(fileId=file_id,
                                            mimeType=mime_type).execute()
 
-    def generate_ids(self, count=10, space=GENERATE_IDS_SPACES[0]):
+    def generate_ids(self, count=10, space='drive'):
         return self.service.files().generateIds(count=count,
                                                 space=space).execute()
 
