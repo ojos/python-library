@@ -81,8 +81,8 @@ class File(object):
     def get(self, file_id):
         return self.service.files().get(fileId=file_id).execute()
 
-    def list(self, file_id):
-        return self.service.files().get(fileId=file_id).execute()
+    def list(self, q=None, order_by=None, page_size=100, page_token=None):
+        return self.service.files().list().execute()
 
     def update(self):
         logger.error('Unimplemented')
