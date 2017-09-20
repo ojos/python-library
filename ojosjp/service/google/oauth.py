@@ -62,7 +62,9 @@ class Certification(object):
         logger.info('START service')
         if self._service is None:
             http_auth = self._credentials.authorize(httplib2.Http())
-            self._service = build(self.service_name, self.service_version, http=http_auth)
+            self._service = build(self.service_name, self.service_version,
+                                  http=http_auth,
+                                  cache_discovery=False)
         logger.info('RETURN %s', '{}'.format(self._service))
         logger.info('END service')
         return self._service
