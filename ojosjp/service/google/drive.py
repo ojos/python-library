@@ -130,7 +130,7 @@ class Channel(object):
     _page_token = None
 
     service = None
-    channel_address = None
+    channel_url = None
     file_id = None
     resource_id = None
 
@@ -162,9 +162,9 @@ class Channel(object):
         logger.info('END channel_type')
         return self._channel_type
 
-    def __init__(self, service, channel_address, file_id=None, channel_id=None, channel_type=None):
+    def __init__(self, service, channel_url, file_id=None, channel_id=None, channel_type=None):
         self.service = service
-        self.channel_address = channel_address
+        self.channel_url = channel_url
         self.file_id = file_id
         self._channel_id = channel_id
         self._channel_type = channel_type
@@ -173,12 +173,12 @@ class Channel(object):
             response = self.service.changes().watch(pageToken=self.page_token,
                                                     body={'id': self.channel_id,
                                                           'type': self.channel_type,
-                                                          'address': self.channel_address}).execute()
+                                                          'address': self.channel_url}).execute()
         else:
             response = self.service.files().watch(fileId=self.file_id,
                                                   body={'id': self.channel_id,
                                                         'type': self.channel_type,
-                                                        'address': self.channel_address}).execute()
+                                                        'address': self.channel_url}).execute()
         self.resource_id = response['resourceId']
         return self
 
