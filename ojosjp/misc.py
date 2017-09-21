@@ -24,10 +24,12 @@ def time_to_i(dt, microsecond=False):
     return i
 
 
-def time_from_i(i):
+def time_from_i(i, microsecond=False):
     logger.info('START time_from_i')
     logger.info('INPUT i=%s', i)
 
+    if microsecond:
+        i /= 1000
     dt = datetime.datetime.fromtimestamp(i)
 
     logger.info('RETURN %s', dt)

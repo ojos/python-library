@@ -3,6 +3,7 @@ import uuid
 from logging import getLogger
 
 from .oauth import Certification
+from ...misc import as_tz, time_from_i, time_to_i
 
 logger = getLogger(__name__)
 
@@ -133,6 +134,7 @@ class Changes(object):
     channel_url = None
     file_id = None
     resource_id = None
+    expiration = None
 
     @property
     def channel_id(self):
@@ -176,30 +178,38 @@ class Changes(object):
         self.channel_url = channel_url
         self.file_id = file_id
         self._channel_type = channel_type
+        if expiration is not None:
+            expiration = time_to_i(expiration, microsecond=True)
 
         if self.file_id is None:
             response = self.service.changes().watch(pageToken=self.page_token,
                                                     body={'id': self.channel_id,
                                                           'type': self.channel_type,
-                                                          'address': self.channel_url}).execute()
+                                                          'address': self.channel_url,
+                                                          'expiration': expiration}).execute()
         else:
             response = self.service.files().watch(fileId=self.file_id,
                                                   body={'id': self.channel_id,
                                                         'type': self.channel_type,
-                                                        'address': self.channel_url}).execute()
+                                                        'address': self.channel_url,
+                                                        'expiration': expiration}).execute()
         self.resource_id = response['resourceId']
         logger.info('SET self.resource_id=%s', self.resource_id)
+        self.expiration = as_tz(time_from_i(int(response['expiration']), microsecond=True))
+        logger.info('SET self.expiration=%s', self.expiration)
         logger.info('RETURN %s', '{}'.format(response))
         logger.info('END watch')
         return response
 
-    def stop(self):
+    def stop(self, resource_id=None):
         logger.info('START stop')
+        if resource_id is None:
+            resource_id = self.resource_id
+            logger.info('SET resource_id=%s', resource_id)
         response = self.service.channels().stop(body={'id': self.channel_id,
-                                                      'resourceId': self.resource_id}).execute()
+                                                      'resourceId': resource_id}).execute()
         logger.info('RETURN %s', '{}'.format(response))
         logger.info('END stop')
-        return response
 
     def list(self):
         pass
