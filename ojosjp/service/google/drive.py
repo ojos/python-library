@@ -195,7 +195,8 @@ class Changes(object):
                                                         'expiration': expiration}).execute()
         self.resource_id = response['resourceId']
         logger.info('SET self.resource_id=%s', self.resource_id)
-        self.expiration = as_tz(time_from_i(int(response['expiration']), microsecond=True))
+        self.expiration = as_tz(time_from_i(int(response['expiration']), microsecond=True),
+                                zone='UTC')
         logger.info('SET self.expiration=%s', self.expiration)
         logger.info('RETURN %s', '{}'.format(response))
         logger.info('END watch')
