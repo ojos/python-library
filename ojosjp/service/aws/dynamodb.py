@@ -75,7 +75,7 @@ class DynamoDB(object):
     @retries()
     def delete_item(self, key):
         logger.info('START delete_item')
-        logger.info('INPUT item=%s', item)
+        logger.info('INPUT key=%s', key)
 
         res = self._client.delete_item(TableName=self._table,
                                        Key=key)
