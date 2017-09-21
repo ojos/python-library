@@ -49,7 +49,7 @@ class Drive(Certification):
         return self.service.about().get(fields='user').execute()['user']
 
 
-class File(object):
+class Files(object):
     UPLOAD_TYPES = ('media', 'multipart', 'resumable')
     FILE_SPACES = ('drive', 'appDataFolder')
 
@@ -88,7 +88,7 @@ class File(object):
         logger.error('Unimplemented')
 
 
-class Permission(object):
+class Permissions(object):
     PERMISSION_TYPES = ('user', 'group', 'domain', 'anyone')
     PERMISSION_ROLES = ('reader', 'commenter', 'writer', 'owner', 'organizer')
 
@@ -122,7 +122,7 @@ class Permission(object):
                                                  transferOwnership=transfer_ownership).execute()
 
 
-class Channel(object):
+class Changes(object):
     DEFAULT_TYPE = 'web_hook'
 
     _channel_id = None
@@ -162,11 +162,19 @@ class Channel(object):
         logger.info('END channel_type')
         return self._channel_type
 
-    def __init__(self, service, channel_url, file_id=None, channel_id=None, channel_type=None):
+    def __init__(self, service, channel_id=None):
+        logger.info('START __init__')
+        logger.info('INPUT service=%s, channel_id=%s', '{}'.format(service.__dict__), channel_id)
         self.service = service
+        self._channel_id = channel_id
+
+        logger.info('END __init__')
+
+    def watch(self, channel_url, file_id=None, channel_type=None, expiration=None):
+        logger.info('START watch')
+        logger.info('INPUT channel_url=%s, file_id=%s, channel_type=%s', channel_url, file_id, channel_type)
         self.channel_url = channel_url
         self.file_id = file_id
-        self._channel_id = channel_id
         self._channel_type = channel_type
 
         if self.file_id is None:
@@ -180,8 +188,18 @@ class Channel(object):
                                                         'type': self.channel_type,
                                                         'address': self.channel_url}).execute()
         self.resource_id = response['resourceId']
-        return self
+        logger.info('SET self.resource_id=%s', self.resource_id)
+        logger.info('RETURN %s', '{}'.format(response))
+        logger.info('END watch')
+        return response
 
     def stop(self):
-        return self.service.channels().stop(body={'id': self.channel_id,
-                                                  'resourceId': self.resource_id}).execute()
+        logger.info('START stop')
+        response = self.service.channels().stop(body={'id': self.channel_id,
+                                                      'resourceId': self.resource_id}).execute()
+        logger.info('RETURN %s', '{}'.format(response))
+        logger.info('END stop')
+        return response
+
+    def list(self):
+        pass

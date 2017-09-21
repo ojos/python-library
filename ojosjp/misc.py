@@ -11,11 +11,13 @@ from logging import getLogger, INFO
 logger = getLogger(__name__)
 logger.setLevel(INFO)
 
-def time_to_i(dt):
+def time_to_i(dt, microsecond=False):
     logger.info('START time_to_i')
-    logger.info('INPUT dt=%s', dt)
+    logger.info('INPUT dt=%s, microsecond=%s', dt, microsecond)
 
     i = int(time.mktime(dt.timetuple()))
+    if microsecond:
+        i = i * 1000 + int(dt.microsecond / 1000)
 
     logger.info('RETURN %s', i)
     logger.info('END time_to_i')
@@ -57,9 +59,7 @@ def now(microsecond=False):
     logger.info('INPUT microsecond=%s', microsecond)
 
     dt = datetime.datetime.now()
-    _now = time_to_i(datetime.datetime.now())
-    if microsecond:
-        _now = int(_now * 1000 + dt.microsecond / 1000)
+    _now = time_to_i(datetime.datetime.now(), microsecond)
 
     logger.info('RETURN %s', _now)
     logger.info('END now')
