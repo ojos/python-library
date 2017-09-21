@@ -75,10 +75,10 @@ class DynamoDB(object):
     @retries()
     def delete_item(self, item):
         logger.info('START delete_item')
-        logger.info('INPUT key=%s', key)
+        logger.info('INPUT item=%s', item)
 
         res = self._client.delete_item(TableName=self._table,
-                                       Key=self.serializer.serialize(key)['M'])
+                                       Key=self.serializer.serialize(item)['M'])
 
         logger.info('SET %s', '{}'.format(res))
         logger.info('END delete_item')
