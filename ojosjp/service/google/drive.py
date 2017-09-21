@@ -172,12 +172,14 @@ class Changes(object):
 
         logger.info('END __init__')
 
-    def watch(self, channel_url, file_id=None, channel_type=None, expiration=None):
+    def watch(self, channel_url, file_id=None, channel_type=None, expiration=None, page_token=None):
         logger.info('START watch')
-        logger.info('INPUT channel_url=%s, file_id=%s, channel_type=%s', channel_url, file_id, channel_type)
+        logger.info('INPUT channel_url=%s, file_id=%s, channel_type=%s, page_token=%s',
+                    channel_url, file_id, channel_type, page_token)
         self.channel_url = channel_url
         self.file_id = file_id
         self._channel_type = channel_type
+        self._page_token = page_token
         if expiration is not None:
             expiration = time_to_i(expiration, microsecond=True)
 
