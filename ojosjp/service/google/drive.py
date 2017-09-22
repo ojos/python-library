@@ -214,5 +214,14 @@ class Changes(object):
         logger.info('RETURN %s', '{}'.format(response))
         logger.info('END stop')
 
-    def list(self):
-        pass
+    def list(self, page_token=None):
+        logger.info('START list')
+        if page_token is None:
+            page_token = self.page_token
+            logger.info('SET page_token=%s', page_token)
+        response = self.service.changes().list(pageToken=page_token).execute()
+        self._page_token = response['newStartPageToken']
+        logger.info('SET self._page_token=%s', self._page_token)
+        logger.info('RETURN %s', response)
+        logger.info('END list')
+        return response
