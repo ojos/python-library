@@ -37,6 +37,9 @@ class Drive(Certification):
                             'video	': 'application/vnd.google-apps.video	',
                             'drive-sdk': 'application/vnd.google-apps.drive-sdk'}
 
+    _user_id = None
+    _permission_id = None
+
     @property
     def scopes(self):
         logger.info('START scopes')
@@ -46,8 +49,32 @@ class Drive(Certification):
         logger.info('END scopes')
         return self._scopes
 
+    @property
+    def user_id(self):
+        logger.info('START user_id')
+        if self._user_id is None:
+            self.about()
+        logger.info('RETURN %s', self._user_id)
+        logger.info('END user_id')
+        return self._user_id
+
+    @property
+    def permission_id(self):
+        logger.info('START permission_id')
+        if self._permission_id is None:
+            self.about()
+        logger.info('RETURN %s', self._permission_id)
+        logger.info('END permission_id')
+        return self._permission_id
+
     def about(self):
-        return self.service.about().get(fields='user').execute()['user']
+        logger.info('START about')
+        user = self.service.about().get(fields='user').execute()['user']
+        self._user_id = user['emailAddress']
+        self._permission_id = user['permissionId']
+        logger.info('RETURN %s' % user)
+        logger.info('END about')
+        return user
 
 
 class Files(object):
@@ -164,24 +191,26 @@ class Changes(object):
         logger.info('END channel_type')
         return self._channel_type
 
-    def __init__(self, service, channel_id=None):
+    def __init__(self, service, channel_id=None, page_token=None, expiration=None, resource_id=None):
         logger.info('START __init__')
-        logger.info('INPUT service=%s, channel_id=%s', '{}'.format(service.__dict__), channel_id)
+        logger.info('INPUT service=%s, channel_id=%s, page_token=%s, expiration=%s',
+                    '{}'.format(service.__dict__), channel_id, page_token, expiration)
         self.service = service
         self._channel_id = channel_id
+        self._page_token = page_token
+        self.expiration = expiration
+        self.resource_id = resource_id
 
         logger.info('END __init__')
 
-    def watch(self, channel_url, file_id=None, channel_type=None, expiration=None, page_token=None):
+    def watch(self, channel_url, file_id=None, channel_type=None):
         logger.info('START watch')
-        logger.info('INPUT channel_url=%s, file_id=%s, channel_type=%s, page_token=%s',
-                    channel_url, file_id, channel_type, page_token)
+        logger.info('INPUT channel_url=%s, file_id=%s, channel_type=%s',
+                    channel_url, file_id, channel_type)
         self.channel_url = channel_url
         self.file_id = file_id
         self._channel_type = channel_type
-        self._page_token = page_token
-        if expiration is not None:
-            expiration = time_to_i(expiration, microsecond=True)
+        expiration = time_to_i(self.expiration, microsecond=True)
 
         if self.file_id is None:
             response = self.service.changes().watch(pageToken=self.page_token,

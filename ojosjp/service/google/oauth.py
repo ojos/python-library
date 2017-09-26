@@ -6,6 +6,8 @@ from logging import getLogger
 from apiclient.discovery import build
 from oauth2client.client import OAuth2WebServerFlow, OAuth2Credentials
 
+from ...event import StaticDispatherMixin
+
 logger = getLogger(__name__)
 
 class Certification(object):
@@ -43,6 +45,19 @@ class Certification(object):
     _service_version = None
     _scopes = None
     _credentials = None
+
+    @classmethod
+    def get_by_code(cls, code, client_id, client_secret, redirect_uri):
+        logger.info('START get_by_code')
+        instance = cls(client_id=client_id,
+                       client_secret=client_secret,
+                       redirect_uri=redirect_uri)
+        logger.info('SET credential=%s', '{}'.format(credential.__dict__))
+        credential.get_credentials_by_code(code)
+
+        logger.info('RETURN %s', '{}'.format(credential))
+        logger.info('END get_by_code')
+        return credential
 
     @property
     def flow(self):
@@ -109,26 +124,23 @@ class Certification(object):
         return self._credentials.token_expiry.strftime('%Y-%m-%dT%H:%M:%SZ')
 
     def __init__(self, client_id, client_secret, redirect_uri,
-                 service_name=None, service_version=None, scopes=None,
-                 access_token=None, refresh_token=None, token_expiry=None):
+                 access_token=None, refresh_token=None, token_expiry=None, **kwargs):
         logger.info('START __init__')
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
-        self._service_name = service_name
-        self._service_version = service_version
-        self._scopes = scopes
         logger.info('INPUT self.client_id=%s', self.client_id)
         logger.info('INPUT self.client_secret=%s', self.client_secret)
         logger.info('INPUT self.redirect_uri=%s', self.redirect_uri)
-        logger.info('INPUT self._service_name=%s', self._service_name)
-        logger.info('INPUT self._service_version=%s', self._service_version)
-        logger.info('INPUT self._scopes=%s', self._scopes)
+
+        for key, value in kwargs.items():
+            setattr(self, '_%s' % key, value)
+            logger.info('INPUT self._%s=%s', key, value)
 
         if None not in (access_token, refresh_token, token_expiry):
-            self._get_credentials_by_token(access_token=access_token,
-                                           refresh_token=refresh_token,
-                                           token_expiry=token_expiry)
+            self.get_credentials_by_token(access_token=access_token,
+                                          refresh_token=refresh_token,
+                                          token_expiry=token_expiry)
 
         logger.info('END __init__')
 
@@ -139,23 +151,24 @@ class Certification(object):
         logger.info('END get_auth_uri')
         return auth_url
 
-    def _refresh_access_token(self, credentials):
-        logger.info('START refresh_access_token')
-        logger.info('INPUT credentials=%s', '{}'.format(credentials))
-        if credentials.access_token_expired:
-            credentials.refresh(httplib2.Http())
-        logger.info('RETURN %s', '{}'.format(credentials))
-        logger.info('END refresh_access_token')
-        return credentials
-
-    def _get_credentials_by_code(self, code):
-        logger.info('START _get_credentials_by_code')
+    def get_credentials_by_code(self, code):
+        logger.info('START get_credentials_by_code')
         logger.info('INPUT code=%s', code)
-        self._credentials = self._refresh_access_token(self.flow.step2_exchange(code))
-        logger.info('END _get_credentials_by_code')
+        self._credentials = self.flow.step2_exchange(code)
+        logger.info('END get_credentials_by_code')
 
-    def _get_credentials_by_token(self, access_token, refresh_token, token_expiry):
-        logger.info('START _get_credentials_by_token')
+    def refresh_credentials(self):
+        logger.info('START refresh_credentials')
+        is_refresh = False
+        if self._credentials.access_token_expired:
+            self._credentials.refresh(httplib2.Http())
+            is_refresh = True
+        logger.info('RETURN %s', is_refresh)
+        logger.info('END refresh_credentials')
+        return is_refresh
+
+    def get_credentials_by_token(self, access_token, refresh_token, token_expiry):
+        logger.info('START get_credentials_by_token')
         logger.info('INPUT access_token=%s, refresh_token=%s, token_expiry=%s',
                     access_token, refresh_token, '{}'.format(token_expiry))
         json = self.CREDENTIALS_JSON_TEMPLATE % {'client_id': self.client_id,
@@ -164,24 +177,25 @@ class Certification(object):
                                                  'refresh_token': refresh_token,
                                                  'token_expiry': token_expiry}
         logger.info('SET json=%s', json)
-        self._credentials = self._refresh_access_token(OAuth2Credentials.from_json(json))
-        logger.info('END _get_credentials_by_token')
+        self._credentials = OAuth2Credentials.from_json(json)
+        self.refresh_credentials()
+        logger.info('END get_credentials_by_token')
 
-    def get_service(self, code=None, access_token=None, refresh_token=None, token_expiry=None,
-                    service_name=None, service_version=None, scopes=None):
-        logger.info('START get_service')
-        self._service_name = service_name
-        self._service_version = service_version
-        self._scopes = scopes
-        logger.info('SET self._service_name=%s', self._service_name)
-        logger.info('SET self._service_version=%s', self._service_version)
-        logger.info('SET self._scopes=%s', self._scopes)
-        if code is not None:
-            self._get_credentials_by_code(code)
-        else:
-            self._get_credentials_by_token(access_token=access_token,
-                                           refresh_token=refresh_token,
-                                           token_expiry=token_expiry)
-        logger.info('RETURN %s', '{}'.format(self.service))
-        logger.info('END get_service')
-        return self.service
+    # def get_service(self, code=None, access_token=None, refresh_token=None, token_expiry=None,
+    #                 service_name=None, service_version=None, scopes=None):
+    #     logger.info('START get_service')
+    #     self._service_name = service_name
+    #     self._service_version = service_version
+    #     self._scopes = scopes
+    #     logger.info('SET self._service_name=%s', self._service_name)
+    #     logger.info('SET self._service_version=%s', self._service_version)
+    #     logger.info('SET self._scopes=%s', self._scopes)
+    #     if code is not None:
+    #         self._get_credentials_by_code(code)
+    #     else:
+    #         self._get_credentials_by_token(access_token=access_token,
+    #                                        refresh_token=refresh_token,
+    #                                        token_expiry=token_expiry)
+    #     logger.info('RETURN %s', '{}'.format(self.service))
+    #     logger.info('END get_service')
+    #     return self.service

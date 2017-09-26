@@ -6,10 +6,9 @@ import datetime
 import pytz
 import time
 
-from logging import getLogger, INFO
+from logging import getLogger
 
 logger = getLogger(__name__)
-logger.setLevel(INFO)
 
 def time_to_i(dt, microsecond=False):
     logger.info('START time_to_i')

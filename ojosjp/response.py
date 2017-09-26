@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, print_function, absolute_import, unicode_literals
 
-from logging import getLogger, INFO
+from logging import getLogger
 
 try:
     import simplejson as json
@@ -12,8 +12,6 @@ from exception import ResponseException
 from misc import now
 
 logger = getLogger(__name__)
-logger.setLevel(INFO)
-
 
 def json_response(code, message, **kwargs):
     logger.info('START json_response')

@@ -3,10 +3,9 @@ from __future__ import division, print_function, absolute_import, unicode_litera
 
 import time
 
-from logging import getLogger, INFO
+from logging import getLogger
 
 logger = getLogger(__name__)
-logger.setLevel(INFO)
 
 def retry_handler(tries_remaining, exception, delay):
     logger.warning("Caught '%s', %d tries remaining, sleeping for %s seconds",

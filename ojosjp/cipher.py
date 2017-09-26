@@ -4,10 +4,9 @@ from __future__ import division, print_function, absolute_import, unicode_litera
 import base64
 import pyaes
 
-from logging import getLogger, INFO
+from logging import getLogger
 
 logger = getLogger(__name__)
-logger.setLevel(INFO)
 
 def encrypt(key, raw):
     logger.info('START encrypt')
