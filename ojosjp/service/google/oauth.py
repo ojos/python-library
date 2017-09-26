@@ -49,15 +49,15 @@ class Certification(object):
     @classmethod
     def get_by_code(cls, code, client_id, client_secret, redirect_uri):
         logger.info('START get_by_code')
-        instance = cls(client_id=client_id,
-                       client_secret=client_secret,
-                       redirect_uri=redirect_uri)
-        logger.info('SET credential=%s', '{}'.format(credential.__dict__))
-        credential.get_credentials_by_code(code)
+        certification = cls(client_id=client_id,
+                            client_secret=client_secret,
+                            redirect_uri=redirect_uri)
+        logger.info('SET certification=%s', '{}'.format(certification.__dict__))
+        certification.get_credentials_by_code(code)
 
-        logger.info('RETURN %s', '{}'.format(credential))
+        logger.info('RETURN %s', '{}'.format(certification))
         logger.info('END get_by_code')
-        return credential
+        return certification
 
     @property
     def flow(self):
