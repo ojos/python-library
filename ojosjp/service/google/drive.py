@@ -67,9 +67,9 @@ class Drive(Certification):
         logger.info('END permission_id')
         return self._permission_id
 
-    def about(self):
+    def about(self, fields='user'):
         logger.info('START about')
-        user = self.service.about().get(fields='user').execute()['user']
+        user = self.service.about().get(fields=fields).execute()['user']
         self._user_id = user['emailAddress']
         self._permission_id = user['permissionId']
         logger.info('RETURN %s' % user)
@@ -86,34 +86,38 @@ class Files(object):
     def __init__(self, service):
         self.service = service
 
+    def get(self, file_id, fields=None):
+        return self.service.files().get(fileId=file_id,
+                                        fields=fields).execute()
+
     def copy(self, file_id, body):
         return self.service.files().copy(fileId=file_id,
                                          body=body).execute()
 
-    def create(self, upload_type, body):
-        return self.service.files().create(fileId=file_id,
-                                           uploadType=upload_type,
-                                           body=body).execute()
+    def delete(self, file_id):
+        return self.service.files().delete(fileId=file_id).execute()
 
-    def empty_trash(self):
-        return self.service.files().emptyTrash().execute()
+    # def create(self, upload_type, body):
+    #     return self.service.files().create(fileId=file_id,
+    #                                        uploadType=upload_type,
+    #                                        body=body).execute()
 
-    def export(self, file_id, mime_type):
-        return self.service.files().export(fileId=file_id,
-                                           mimeType=mime_type).execute()
+    # def empty_trash(self):
+    #     return self.service.files().emptyTrash().execute()
 
-    def generate_ids(self, count=10, space='drive'):
-        return self.service.files().generateIds(count=count,
-                                                space=space).execute()
+    # def export(self, file_id, mime_type):
+    #     return self.service.files().export(fileId=file_id,
+    #                                        mimeType=mime_type).execute()
 
-    def get(self, file_id):
-        return self.service.files().get(fileId=file_id).execute()
+    # def generate_ids(self, count=10, space='drive'):
+    #     return self.service.files().generateIds(count=count,
+    #                                             space=space).execute()
 
-    def list(self, q=None, order_by=None, page_size=100, page_token=None):
-        return self.service.files().list().execute()
+    # def list(self, q=None, order_by=None, page_size=100, page_token=None):
+    #     return self.service.files().list().execute()
 
-    def update(self):
-        logger.error('Unimplemented')
+    # def update(self):
+    #     logger.error('Unimplemented')
 
 
 class Permissions(object):
