@@ -29,13 +29,13 @@ class Drive(Certification):
                             'form': 'application/vnd.google-apps.form',
                             'fusiontable': 'application/vnd.google-apps.fusiontable',
                             'map': 'application/vnd.google-apps.map',
-                            'photo	': 'application/vnd.google-apps.photo	',
+                            'photo	': 'application/vnd.google-apps.photo',
                             'presentation': 'application/vnd.google-apps.presentation',
                             'script': 'application/vnd.google-apps.script',
                             'sites': 'application/vnd.google-apps.sites',
                             'spreadsheet': 'application/vnd.google-apps.spreadsheet',
-                            'unknown	': 'application/vnd.google-apps.unknown	',
-                            'video	': 'application/vnd.google-apps.video	',
+                            'unknown	': 'application/vnd.google-apps.unknown',
+                            'video	': 'application/vnd.google-apps.video',
                             'drive-sdk': 'application/vnd.google-apps.drive-sdk'}
 
     _user_id = None
@@ -88,6 +88,9 @@ class Files(object):
         logger.info('START __init__')
         logger.info('INPUT service=%s, kwargs=%s', '{}'.format(service.__dict__), '{}'.format(kwargs))
         self.service = service
+        for key, value in kwargs.items():
+            setattr(self, '_%s' % key, value)
+            logger.info('INPUT self._%s=%s', key, value)
         logger.info('END __init__')
 
     def get(self, file_id, fields=None):
@@ -100,6 +103,10 @@ class Files(object):
 
     def delete(self, file_id):
         return self.service.files().delete(fileId=file_id).execute()
+
+    def update(self, file_id, body):
+        return self.service.files().update(fileId=file_id,
+                                           body=body).execute()
 
     # def create(self, upload_type, body):
     #     return self.service.files().create(fileId=file_id,
@@ -134,6 +141,9 @@ class Permissions(object):
         logger.info('START __init__')
         logger.info('INPUT service=%s, kwargs=%s', '{}'.format(service.__dict__), '{}'.format(kwargs))
         self.service = service
+        for key, value in kwargs.items():
+            setattr(self, '_%s' % key, value)
+            logger.info('INPUT self._%s=%s', key, value)
         logger.info('END __init__')
 
     def create(self, file_id, body, send_notification_email=False):
@@ -207,15 +217,12 @@ class Changes(object):
         logger.info('START __init__')
         logger.info('INPUT service=%s, kwargs=%s', '{}'.format(service.__dict__), '{}'.format(kwargs))
         self.service = service
-
         for key, value in kwargs.items():
             if key == 'expiration':
-                self._expiration = as_tz(datetime.strptime(value, self.DATE_FORMAT),
-                                         zone='UTC')
+                self._expiration = as_tz(datetime.strptime(value, self.DATE_FORMAT), zone='UTC')
             else:
                 setattr(self, '_%s' % key, value)
                 logger.info('INPUT self._%s=%s', key, value)
-
         logger.info('END __init__')
 
     def watch(self, channel_url, file_id=None, channel_type=DEFAULT_TYPE):
