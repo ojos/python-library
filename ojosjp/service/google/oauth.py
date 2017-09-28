@@ -180,22 +180,3 @@ class Certification(object):
         self._credentials = OAuth2Credentials.from_json(json)
         self.refresh_credentials()
         logger.info('END get_credentials_by_token')
-
-    # def get_service(self, code=None, access_token=None, refresh_token=None, token_expiry=None,
-    #                 service_name=None, service_version=None, scopes=None):
-    #     logger.info('START get_service')
-    #     self._service_name = service_name
-    #     self._service_version = service_version
-    #     self._scopes = scopes
-    #     logger.info('SET self._service_name=%s', self._service_name)
-    #     logger.info('SET self._service_version=%s', self._service_version)
-    #     logger.info('SET self._scopes=%s', self._scopes)
-    #     if code is not None:
-    #         self._get_credentials_by_code(code)
-    #     else:
-    #         self._get_credentials_by_token(access_token=access_token,
-    #                                        refresh_token=refresh_token,
-    #                                        token_expiry=token_expiry)
-    #     logger.info('RETURN %s', '{}'.format(self.service))
-    #     logger.info('END get_service')
-    #     return self.service

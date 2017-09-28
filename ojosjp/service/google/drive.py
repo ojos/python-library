@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import uuid
+from datetime import datetime, timedelta
 from logging import getLogger
 
 from .oauth import Certification
@@ -83,8 +84,11 @@ class Files(object):
 
     service = None
 
-    def __init__(self, service):
+    def __init__(self, service, **kwargs):
+        logger.info('START __init__')
+        logger.info('INPUT service=%s, kwargs=%s', '{}'.format(service.__dict__), '{}'.format(kwargs))
         self.service = service
+        logger.info('END __init__')
 
     def get(self, file_id, fields=None):
         return self.service.files().get(fileId=file_id,
@@ -126,8 +130,11 @@ class Permissions(object):
 
     service = None
 
-    def __init__(self, service):
+    def __init__(self, service, **kwargs):
+        logger.info('START __init__')
+        logger.info('INPUT service=%s, kwargs=%s', '{}'.format(service.__dict__), '{}'.format(kwargs))
         self.service = service
+        logger.info('END __init__')
 
     def create(self, file_id, body, send_notification_email=False):
         return self.service.permissions().create(fileId=file_id,
@@ -156,16 +163,15 @@ class Permissions(object):
 
 class Changes(object):
     DEFAULT_TYPE = 'web_hook'
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+    SECONDS_TO_OBSERVE = 60 * 60
 
     _channel_id = None
-    _channel_type = None
     _page_token = None
+    _resource_id = None
+    _expiration = None
 
     service = None
-    channel_url = None
-    file_id = None
-    resource_id = None
-    expiration = None
 
     @property
     def channel_id(self):
@@ -187,51 +193,53 @@ class Changes(object):
         return self._page_token
 
     @property
-    def channel_type(self):
-        logger.info('START channel_type')
-        if self._channel_type is None:
-            self._channel_type = self.DEFAULT_TYPE
-        logger.info('RETURN %s', self._channel_type)
-        logger.info('END channel_type')
-        return self._channel_type
+    def resource_id(self):
+        return self._resource_id
 
-    def __init__(self, service, channel_id=None, page_token=None, expiration=None, resource_id=None):
+    @property
+    def expiration(self):
+        if self._expiration is None:
+            self._expiration = as_tz(datetime.utcnow() + timedelta(seconds=self.SECONDS_TO_OBSERVE),
+                                     zone='UTC')
+        return self._expiration
+
+    def __init__(self, service, **kwargs):
         logger.info('START __init__')
-        logger.info('INPUT service=%s, channel_id=%s, page_token=%s, expiration=%s',
-                    '{}'.format(service.__dict__), channel_id, page_token, expiration)
+        logger.info('INPUT service=%s, kwargs=%s', '{}'.format(service.__dict__), '{}'.format(kwargs))
         self.service = service
-        self._channel_id = channel_id
-        self._page_token = page_token
-        self.expiration = expiration
-        self.resource_id = resource_id
+
+        for key, value in kwargs.items():
+            if key == 'expiration':
+                self._expiration = as_tz(datetime.strptime(value, self.DATE_FORMAT),
+                                         zone='UTC')
+            else:
+                setattr(self, '_%s' % key, value)
+                logger.info('INPUT self._%s=%s', key, value)
 
         logger.info('END __init__')
 
-    def watch(self, channel_url, file_id=None, channel_type=None):
+    def watch(self, channel_url, file_id=None, channel_type=DEFAULT_TYPE):
         logger.info('START watch')
         logger.info('INPUT channel_url=%s, file_id=%s, channel_type=%s',
                     channel_url, file_id, channel_type)
-        self.channel_url = channel_url
-        self.file_id = file_id
-        self._channel_type = channel_type
         expiration = time_to_i(self.expiration, microsecond=True)
 
-        if self.file_id is None:
+        if file_id is None:
             response = self.service.changes().watch(pageToken=self.page_token,
                                                     body={'id': self.channel_id,
-                                                          'type': self.channel_type,
-                                                          'address': self.channel_url,
+                                                          'type': channel_type,
+                                                          'address': channel_url,
                                                           'expiration': expiration}).execute()
         else:
-            response = self.service.files().watch(fileId=self.file_id,
+            response = self.service.files().watch(fileId=file_id,
                                                   body={'id': self.channel_id,
-                                                        'type': self.channel_type,
-                                                        'address': self.channel_url,
+                                                        'type': channel_type,
+                                                        'address': channel_url,
                                                         'expiration': expiration}).execute()
-        self.resource_id = response['resourceId']
+        self._resource_id = response['resourceId']
+        self._expiration = as_tz(time_from_i(int(response['expiration']), microsecond=True),
+                                 zone='UTC')
         logger.info('SET self.resource_id=%s', self.resource_id)
-        self.expiration = as_tz(time_from_i(int(response['expiration']), microsecond=True),
-                                zone='UTC')
         logger.info('SET self.expiration=%s', self.expiration)
         logger.info('RETURN %s', '{}'.format(response))
         logger.info('END watch')
