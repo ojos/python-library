@@ -6,7 +6,7 @@ from logging import getLogger
 from apiclient.discovery import build
 from oauth2client.client import OAuth2WebServerFlow, OAuth2Credentials
 
-from ...event import StaticDispatherMixin
+from ...decorator import retries
 
 logger = getLogger(__name__)
 
@@ -47,6 +47,7 @@ class Certification(object):
     _credentials = None
 
     @classmethod
+    @retries()
     def get_by_code(cls, code, client_id, client_secret, redirect_uri):
         logger.info('START get_by_code')
         certification = cls(client_id=client_id,
@@ -73,6 +74,7 @@ class Certification(object):
         return self._flow
 
     @property
+    @retries()
     def service(self):
         logger.info('START service')
         if self._service is None:
@@ -151,12 +153,14 @@ class Certification(object):
         logger.info('END get_auth_uri')
         return auth_url
 
+    @retries()
     def get_credentials_by_code(self, code):
         logger.info('START get_credentials_by_code')
         logger.info('INPUT code=%s', code)
         self._credentials = self.flow.step2_exchange(code)
         logger.info('END get_credentials_by_code')
 
+    @retries()
     def refresh_credentials(self):
         logger.info('START refresh_credentials')
         is_refresh = False
@@ -167,6 +171,7 @@ class Certification(object):
         logger.info('END refresh_credentials')
         return is_refresh
 
+    @retries()
     def get_credentials_by_token(self, access_token, refresh_token, token_expiry):
         logger.info('START get_credentials_by_token')
         logger.info('INPUT access_token=%s, refresh_token=%s, token_expiry=%s',

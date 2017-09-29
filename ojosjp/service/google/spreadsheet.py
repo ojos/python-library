@@ -4,6 +4,8 @@ from logging import getLogger
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
+from ...decorator import retries
+
 from .drive import Drive
 from .exception import GoogleException
 
@@ -16,6 +18,7 @@ class Spreadsheet(object):
     _key = None
 
     @property
+    @retries()
     def records(self):
         logger.info('START records')
         records = self._worksheet.get_all_records()
@@ -23,6 +26,7 @@ class Spreadsheet(object):
         logger.info('END records')
         return records
 
+    @retries()
     def __init__(self, credential_dict, file_id, title, scopes=[Drive.SERVICE_SCOPES['drive']]):
         logger.info('START __init__')
         credentials = ServiceAccountCredentials.from_json_keyfile_dict(credential_dict,
@@ -56,6 +60,7 @@ class Spreadsheet(object):
         logger.info('END get_by_key')
         return cells, row, is_include
 
+    @retries()
     def insert(self, record, force=True):
         logger.info('START insert')
         cells, row, is_include = self.get_by_key(record[self._key])

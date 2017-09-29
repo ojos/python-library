@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from logging import getLogger
 
 from .oauth import Certification
+from ...decorator import retries
 from ...misc import as_tz, time_from_i, time_to_i
 
 logger = getLogger(__name__)
@@ -68,6 +69,7 @@ class Drive(Certification):
         logger.info('END permission_id')
         return self._permission_id
 
+    @retries()
     def about(self, fields='user'):
         logger.info('START about')
         user = self.service.about().get(fields=fields).execute()['user']
@@ -93,20 +95,44 @@ class Files(object):
             logger.info('INPUT self._%s=%s', key, value)
         logger.info('END __init__')
 
+    @retries()
     def get(self, file_id, fields=None):
-        return self.service.files().get(fileId=file_id,
-                                        fields=fields).execute()
+        logger.info('START get')
+        logger.info('INPUT file_id=%s, files=%s', file_id, fields)
+        res = self.service.files().get(fileId=file_id,
+                                       fields=fields).execute()
+        logger.info('RETURN %s' % res)
+        logger.info('END get')
+        return res
 
+    @retries()
     def copy(self, file_id, body):
-        return self.service.files().copy(fileId=file_id,
-                                         body=body).execute()
+        logger.info('START copy')
+        logger.info('INPUT file_id=%s, body=%s', file_id, body)
+        res = self.service.files().copy(fileId=file_id,
+                                        body=body).execute()
+        logger.info('RETURN %s' % res)
+        logger.info('END copy')
+        return res
 
+    @retries()
     def delete(self, file_id):
-        return self.service.files().delete(fileId=file_id).execute()
+        logger.info('START delete')
+        logger.info('INPUT file_id=%s', file_id)
+        res = self.service.files().delete(fileId=file_id).execute()
+        logger.info('RETURN %s' % res)
+        logger.info('END delete')
+        return res
 
+    @retries()
     def update(self, file_id, body):
-        return self.service.files().update(fileId=file_id,
-                                           body=body).execute()
+        logger.info('START update')
+        logger.info('INPUT file_id=%s, body=%s', file_id, body)
+        res = self.service.files().update(fileId=file_id,
+                                          body=body).execute()
+        logger.info('RETURN %s' % res)
+        logger.info('END update')
+        return res
 
     # def create(self, upload_type, body):
     #     return self.service.files().create(fileId=file_id,
@@ -146,30 +172,62 @@ class Permissions(object):
             logger.info('INPUT self._%s=%s', key, value)
         logger.info('END __init__')
 
+    @retries()
     def create(self, file_id, body, send_notification_email=False):
-        return self.service.permissions().create(fileId=file_id,
-                                                 sendNotificationEmail=send_notification_email,
-                                                 body=body).execute()
+        logger.info('START create')
+        logger.info('INPUT file_id=%s, body=%s, send_notification_email=%s',
+                    file_id, body, send_notification_email)
+        res = self.service.permissions().create(fileId=file_id,
+                                                sendNotificationEmail=send_notification_email,
+                                                body=body).execute()
+        logger.info('RETURN %s' % res)
+        logger.info('END create')
+        return res
 
+    @retries()
     def delete(self, file_id, permission_id):
-        return self.service.permissions().delete(fileId=file_id,
-                                                 permissionId=permission_id).execute()
+        logger.info('START delete')
+        logger.info('INPUT file_id=%s, permission_id=%s', file_id, permission_id)
+        res = self.service.permissions().delete(fileId=file_id,
+                                                permissionId=permission_id).execute()
+        logger.info('RETURN %s' % res)
+        logger.info('END delete')
+        return res
 
+    @retries()
     def get(self, file_id, permission_id):
-        return self.service.permissions().get(fileId=file_id,
-                                              permissionId=permission_id).execute()
+        logger.info('START get')
+        logger.info('INPUT file_id=%s, permission_id=%s', file_id, permission_id)
+        res = self.service.permissions().get(fileId=file_id,
+                                             permissionId=permission_id).execute()
+        logger.info('RETURN %s' % res)
+        logger.info('END get')
+        return res
 
+    @retries()
     def list(self, file_id, page_size=100, page_token=None):
-        return self.service.permissions().list(fileId=file_id,
-                                               pageSize=page_size,
-                                               pageToken=page_token).execute()
+        logger.info('START list')
+        logger.info('INPUT file_id=%s, page_size=%s, page_token=%s',
+                    file_id, page_size, page_token)
+        res = self.service.permissions().list(fileId=file_id,
+                                              pageSize=page_size,
+                                              pageToken=page_token).execute()
+        logger.info('RETURN %s' % res)
+        logger.info('END list')
+        return res
 
+    @retries()
     def update(self, file_id, permission_id, body, transfer_ownership=False):
-        return self.service.permissions().update(fileId=file_id,
-                                                 permissionId=permission_id,
-                                                 body=body,
-                                                 transferOwnership=transfer_ownership).execute()
-
+        logger.info('START update')
+        logger.info('INPUT file_id=%s, permission_id=%s, body=%s, transfer_ownership=%s',
+                    file_id, permission_id, body, transfer_ownership)
+        res = self.service.permissions().update(fileId=file_id,
+                                                permissionId=permission_id,
+                                                body=body,
+                                                transferOwnership=transfer_ownership).execute()
+        logger.info('RETURN %s' % res)
+        logger.info('END update')
+        return res
 
 class Changes(object):
     DEFAULT_TYPE = 'web_hook'
@@ -193,6 +251,7 @@ class Changes(object):
         return self._channel_id
 
     @property
+    @retries()
     def page_token(self):
         logger.info('START page_token')
         if self._page_token is None:
@@ -225,6 +284,7 @@ class Changes(object):
                 logger.info('INPUT self._%s=%s', key, value)
         logger.info('END __init__')
 
+    @retries()
     def watch(self, channel_url, file_id=None, channel_type=DEFAULT_TYPE):
         logger.info('START watch')
         logger.info('INPUT channel_url=%s, file_id=%s, channel_type=%s',
@@ -252,6 +312,7 @@ class Changes(object):
         logger.info('END watch')
         return response
 
+    @retries()
     def stop(self, resource_id=None):
         logger.info('START stop')
         if resource_id is None:
@@ -262,6 +323,7 @@ class Changes(object):
         logger.info('RETURN %s', '{}'.format(response))
         logger.info('END stop')
 
+    @retries()
     def list(self, page_token=None):
         logger.info('START list')
         if page_token is None:

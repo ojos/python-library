@@ -6,7 +6,7 @@ from logging import getLogger
 from linebot import HttpClient, LineBotApi, RequestsHttpClient
 from linebot.exceptions import LineBotApiError
 
-from ojosjp.decorator import retries
+from ...decorator import retries
 
 logger = getLogger(__name__)
 

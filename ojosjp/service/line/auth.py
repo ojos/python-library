@@ -8,6 +8,8 @@ import requests
 
 from logging import getLogger
 
+from ...decorator import retries
+
 logger = getLogger(__name__)
 
 OAUTH_URL = 'https://api.line.me/v2/oauth/accessToken'
@@ -25,6 +27,7 @@ def signature(channel_secret, msg):
     logger.info('END signature')
     return signature
 
+@retries()
 def access_token(client_id, client_secret):
     logger.info('START access_token')
     logger.info('INPUT client_id=%s, client_secret=%s', client_id, client_secret)

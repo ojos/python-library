@@ -6,6 +6,8 @@ import requests
 
 from logging import getLogger
 
+from ...decorator import retries
+
 logger = getLogger(__name__)
 
 class Channel(object):
@@ -21,6 +23,7 @@ class Channel(object):
         logger.info('SET self.channel=%s', self.channel)
         logger.info('END __init__')
 
+    @retries()
     def incoming(self, text, username=None, icon_emoji=None):
         logger.info('START incoming')
         logger.info('INPUT text=%s, username=%s, icon_emoji=%s',

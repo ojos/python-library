@@ -5,8 +5,8 @@ from logging import getLogger
 
 from boto3.dynamodb.types import TypeDeserializer, TypeSerializer
 
-from ojosjp.decorator import retries
-from ojosjp.service.aws.core import get_client
+from ...decorator import retries
+from .core import get_client
 
 FALID_INSERT_TO_DYNAMODB = 'FAILD INSERT TO DYNAMODB'
 FALID_DELETE_TO_DYNAMODB = 'FAILD DELETE TO DYNAMODB'

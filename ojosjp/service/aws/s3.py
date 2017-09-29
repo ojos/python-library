@@ -10,8 +10,8 @@ try:
 except ImportError:
     from BytesIO import BytesIO
 
-from ojosjp.decorator import retries
-from ojosjp.service.aws.core import get_client
+from ...decorator import retries
+from .core import get_client
 
 FALID_GET_OBJECT = 'FAILD GET OBJECT'
 FAILD_PUT_OBJECT = 'FAILD PUT OBJECT'

@@ -8,8 +8,8 @@ import traceback
 
 from logging import getLogger
 
-from ojosjp.misc import time_from_i
-from ojosjp.service.aws.core import get_client
+from ...misc import time_from_i
+from .core import get_client
 
 logger = getLogger(__name__)
 

@@ -5,8 +5,8 @@ import json
 import time
 from logging import getLogger
 
-from ojosjp.decorator import retries
-from ojosjp.service.aws.core import get_client
+from ...decorator import retries
+from .core import get_client
 
 FALID_INVOKE = 'FAILD INVOKE'
 

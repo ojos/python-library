@@ -12,7 +12,7 @@ from logging import getLogger
 
 from botocore.client import BaseClient
 
-from ojosjp.service.aws.core import get_client
+from .core import get_client
 
 DEFAULT_TAGS = {'Name': 'app',
                 'Roles': 'app',
