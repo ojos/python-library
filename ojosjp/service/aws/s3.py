@@ -51,6 +51,7 @@ class S3(object):
 
         logger.info('RETURN %s', '{}'.format(obj))
         logger.info('END get_object')
+        return obj
 
     def _expand_text(self, context):
         logger.info('START _expand_text')
