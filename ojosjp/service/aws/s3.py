@@ -76,7 +76,7 @@ class S3(object):
         gzip_file.close()
         context = bytesio.getvalue()
 
-        logger.info('RETURN %s', '{}'.format(context.__dict__))
+        logger.info('RETURN %s', context)
         logger.info('END _compress_text')
         return context
 
