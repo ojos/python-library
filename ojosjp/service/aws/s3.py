@@ -72,7 +72,7 @@ class S3(object):
 
         bytesio = BytesIO()
         gzip_file = gzip.GzipFile(fileobj=bytesio, mode='wb')
-        gzip_file.write(context)
+        gzip_file.write(context.encode('utf-8'))
         gzip_file.close()
         context = bytesio.getvalue()
 
