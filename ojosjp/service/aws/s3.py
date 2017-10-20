@@ -95,7 +95,7 @@ class S3(object):
         logger.info('SET kwargs=%s', kwargs)
 
         if compress:
-            kwargs['Body'] = self._compress_text(kwargs['Body'])
+            kwargs['Body'] = self._compress_text(kwargs['Body']).decode('utf-8')
             kwargs['ContentEncoding'] = 'gzip'
         res = self._client.put_object(**kwargs)
 
