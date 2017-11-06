@@ -10,6 +10,7 @@ from logging import getLogger
 
 logger = getLogger(__name__)
 
+
 def time_to_i(dt, microsecond=False):
     logger.info('START time_to_i')
     logger.info('INPUT dt=%s, microsecond=%s', dt, microsecond)
