@@ -19,6 +19,7 @@ DEFAULT_TAGS = {'Name': 'app',
                 'Environment': 'develop'}
 DEFAULT_INSTANCE_ID = 'localhost'
 DEFAULT_PUBLIC_IP = '127.0.0.1'
+DEFAULT_LOCAL_IP = '0.0.0.0'
 
 logger = getLogger(__name__)
 
@@ -148,21 +149,24 @@ class InstanceMetadata(object):
                  tags=DEFAULT_TAGS,
                  instance_id=DEFAULT_INSTANCE_ID,
                  public_ip=DEFAULT_PUBLIC_IP,
+                 local_ip=DEFAULT_LOCAL_IP,
                  timeout=0.5):
         logger.info('START __init__')
-        logger.info('INPUT client=%s, tags=%s, instance_id=%s, public_ip=%s, timeout=%s',
-                    client, tags, instance_id, public_ip, timeout)
+        logger.info('INPUT client=%s, tags=%s, instance_id=%s, public_ip=%s, local_ip=%s, timeout=%s',
+                    client, tags, instance_id, public_ip, local_ip, timeout)
 
         self._client = client if isinstance(client, BaseClient) else get_client('ec2')
         self._tags = tags
         self._instance_id = instance_id
         self._public_ip = public_ip
+        self._local_ip = local_ip
         self.timeout = timeout
 
         logger.info('SET self._client=%s', '{}'.format(self._client.__dict__))
         logger.info('SET self._tags=%s', self._tags)
         logger.info('SET self._instance_id=%s', self._instance_id)
         logger.info('SET self._public_ip=%s', self._public_ip)
+        logger.info('SET self._local_ip=%s', self._local_ip)
         logger.info('SET self.timeout=%s', self.timeout)
         logger.info('END __init__')
 
