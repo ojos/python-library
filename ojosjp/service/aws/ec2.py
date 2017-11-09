@@ -22,6 +22,7 @@ DEFAULT_PUBLIC_IP = '127.0.0.1'
 
 logger = getLogger(__name__)
 
+
 class InstanceMetadata(object):
     # EC2_USER_DATA_URL = 'http://169.254.169.254/latest/user-data/'
     EC2_META_DATA_URL = 'http://169.254.169.254/latest/meta-data/%s'
@@ -31,6 +32,7 @@ class InstanceMetadata(object):
     _client = None
     _instance_id = None
     _public_ip = None
+    _local_ip = None
     _tags = None
 
     @property
@@ -77,6 +79,21 @@ class InstanceMetadata(object):
         logger.info('RETURN %s', self._public_ip)
         logger.info('END public_ip')
         return self._public_ip
+
+    @property
+    def local_ip(self):
+        logger.info('START local_ip')
+
+        if not 'local_ip' in self._once:
+            try:
+                self._local_ip = self.get_metadata('local-ipv4')
+                self._once.append('local_ip')
+            except:
+                pass
+
+        logger.info('RETURN %s', self._local_ip)
+        logger.info('END local_ip')
+        return self._local_ip
 
     @property
     def tags(self):
@@ -127,12 +144,11 @@ class InstanceMetadata(object):
         logger.info('END roles')
         return roles
 
-
     def __init__(self, client=None,
-                       tags=DEFAULT_TAGS,
-                       instance_id=DEFAULT_INSTANCE_ID,
-                       public_ip=DEFAULT_PUBLIC_IP,
-                       timeout=0.5):
+                 tags=DEFAULT_TAGS,
+                 instance_id=DEFAULT_INSTANCE_ID,
+                 public_ip=DEFAULT_PUBLIC_IP,
+                 timeout=0.5):
         logger.info('START __init__')
         logger.info('INPUT client=%s, tags=%s, instance_id=%s, public_ip=%s, timeout=%s',
                     client, tags, instance_id, public_ip, timeout)
