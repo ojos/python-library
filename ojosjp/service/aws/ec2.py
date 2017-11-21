@@ -162,11 +162,10 @@ class InstanceMetadata(object):
         return res.text
 
     def _get_tags(self, instance_id):
-        filters = [{'Name': 'instance-id', 'Values': [instance_id]}]
-        res = self._client.describe_instances(Filters=filters)
-        logger.info('SET res=%s', '{}'.format(res))
-
         try:
+            filters = [{'Name': 'instance-id', 'Values': [instance_id]}]
+            res = self._client.describe_instances(Filters=filters)
+            logger.info('SET res=%s', '{}'.format(res))
             tags = {t['Key']: t['Value']
                     for t in res['Reservations'][0]['Instances'][0]['Tags']}
         except Exception:
