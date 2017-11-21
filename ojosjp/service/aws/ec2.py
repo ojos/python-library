@@ -57,7 +57,7 @@ class InstanceMetadata(object):
 
         if self._instance_id is None:
             if self._mock:
-                self._instance_id = kwargs.get('instance_id', self.DEFAULT_INSTANCE_ID)
+                self._instance_id = self._kwargs.get('instance_id', self.DEFAULT_INSTANCE_ID)
             else:
                 self._instance_id = self.get_metadata('instance-id')
 
@@ -71,7 +71,7 @@ class InstanceMetadata(object):
 
         if self._public_ip is None:
             if self._mock:
-                self._public_ip = kwargs.get('public_ip', self.DEFAULT_PUBLIC_IP)
+                self._public_ip = self._kwargs.get('public_ip', self.DEFAULT_PUBLIC_IP)
             else:
                 self._public_ip = self.get_metadata('public-ipv4')
 
@@ -85,7 +85,7 @@ class InstanceMetadata(object):
 
         if self._local_ip is None:
             if self._mock:
-                self._local_ip = kwargs.get('local_ip', self.DEFAULT_LOCAL_IP)
+                self._local_ip = self._kwargs.get('local_ip', self.DEFAULT_LOCAL_IP)
             else:
                 self._local_ip = self.get_metadata('local-ipv4')
 
@@ -99,7 +99,7 @@ class InstanceMetadata(object):
 
         if self._tags is None:
             if self._mock:
-                self._tags = kwargs.get('tags', self.DEFAULT_TAGS)
+                self._tags = self._kwargs.get('tags', self.DEFAULT_TAGS)
             else:
                 self._tags = self._get_tags(self.instance_id)
 
