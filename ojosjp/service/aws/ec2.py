@@ -100,7 +100,7 @@ class InstanceMetadata(object):
             if self._mock:
                 self._tags = kwargs.get('tags', self.DEFAULT_TAGS)
             else:
-                self._tags = self._get_tags(self, self.instance_id)
+                self._tags = self._get_tags(self.instance_id)
 
         logger.info('RETURN %s', self._tags)
         logger.info('END tags')
