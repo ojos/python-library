@@ -12,7 +12,6 @@ from logging import getLogger
 
 from botocore.client import BaseClient
 
-from ...decorator import retries
 from .core import get_client
 
 
