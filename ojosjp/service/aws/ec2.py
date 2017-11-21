@@ -171,7 +171,7 @@ class InstanceMetadata(object):
         logger.info('SET self.timeout=%s', self.timeout)
         logger.info('END __init__')
 
-    @retries
+    @retries()
     def get_metadata(self, category):
         logger.info('START get_metadata')
         logger.info('INPUT category=%s', category)
