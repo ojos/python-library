@@ -100,11 +100,7 @@ class InstanceMetadata(object):
             if self._mock:
                 self._tags = kwargs.get('tags', self.DEFAULT_TAGS)
             else:
-                filters = [{'Name': 'instance-id', 'Values': [self.instance_id]}]
-                res = self._client.describe_instances(Filters=filters)
-                logger.info('SET res=%s', '{}'.format(res))
-                self._tags = {t['Key']: t['Value']
-                              for t in res['Reservations'][0]['Instances'][0]['Tags']}
+                self._tags = self._get_tags(self, self.instance_id)
 
         logger.info('RETURN %s', self._tags)
         logger.info('END tags')
@@ -164,3 +160,17 @@ class InstanceMetadata(object):
         logger.info('RETURN %s', res.text)
         logger.info('END get_metadata')
         return res.text
+
+    def _get_tags(self, instance_id):
+        filters = [{'Name': 'instance-id', 'Values': [instance_id]}]
+        res = self._client.describe_instances(Filters=filters)
+        logger.info('SET res=%s', '{}'.format(res))
+
+        try:
+            tags = {t['Key']: t['Value']
+                    for t in res['Reservations'][0]['Instances'][0]['Tags']}
+        except Exception:
+            time.sleep(1)
+            tags = self._get_tags(instance_id)
+
+        return tags
