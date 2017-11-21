@@ -12,6 +12,7 @@ from logging import getLogger
 
 from botocore.client import BaseClient
 
+from ...decorator import retries
 from .core import get_client
 
 DEFAULT_TAGS = {'Name': 'app',
@@ -170,6 +171,7 @@ class InstanceMetadata(object):
         logger.info('SET self.timeout=%s', self.timeout)
         logger.info('END __init__')
 
+    @retries
     def get_metadata(self, category):
         logger.info('START get_metadata')
         logger.info('INPUT category=%s', category)
