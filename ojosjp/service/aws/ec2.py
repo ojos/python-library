@@ -15,12 +15,6 @@ from botocore.client import BaseClient
 from ...decorator import retries
 from .core import get_client
 
-DEFAULT_TAGS = {'Name': 'app',
-                'Roles': 'app',
-                'Environment': 'develop'}
-DEFAULT_INSTANCE_ID = 'localhost'
-DEFAULT_PUBLIC_IP = '127.0.0.1'
-DEFAULT_LOCAL_IP = '0.0.0.0'
 
 logger = getLogger(__name__)
 
@@ -29,8 +23,13 @@ class InstanceMetadata(object):
     # EC2_USER_DATA_URL = 'http://169.254.169.254/latest/user-data/'
     EC2_META_DATA_URL = 'http://169.254.169.254/latest/meta-data/%s'
     RESOLVE_CONF = '/etc/resolv.conf'
+    DEFAULT_TAGS = {'Name': 'app',
+                    'Roles': 'app',
+                    'Environment': 'develop'}
+    DEFAULT_INSTANCE_ID = 'localhost'
+    DEFAULT_PUBLIC_IP = '127.0.0.1'
+    DEFAULT_LOCAL_IP = '0.0.0.0'
 
-    _once = []
     _client = None
     _instance_id = None
     _public_ip = None
@@ -56,12 +55,11 @@ class InstanceMetadata(object):
     def instance_id(self):
         logger.info('START instance_id')
 
-        if not 'instance_id' in self._once:
-            try:
+        if self._instance_id is None:
+            if self._mock:
+                self._instance_id = kwargs.get('instance_id', self.DEFAULT_INSTANCE_ID)
+            else:
                 self._instance_id = self.get_metadata('instance-id')
-                self._once.append('instance_id')
-            except:
-                pass
 
         logger.info('RETURN %s', self._instance_id)
         logger.info('END instance_id')
@@ -71,12 +69,11 @@ class InstanceMetadata(object):
     def public_ip(self):
         logger.info('START public_ip')
 
-        if not 'public_ip' in self._once:
-            try:
+        if self._public_ip is None:
+            if self._mock:
+                self._public_ip = kwargs.get('public_ip', self.DEFAULT_PUBLIC_IP)
+            else:
                 self._public_ip = self.get_metadata('public-ipv4')
-                self._once.append('public_ip')
-            except:
-                pass
 
         logger.info('RETURN %s', self._public_ip)
         logger.info('END public_ip')
@@ -86,12 +83,11 @@ class InstanceMetadata(object):
     def local_ip(self):
         logger.info('START local_ip')
 
-        if not 'local_ip' in self._once:
-            try:
+        if self._local_ip is None:
+            if self._mock:
+                self._local_ip = kwargs.get('local_ip', self.DEFAULT_LOCAL_IP)
+            else:
                 self._local_ip = self.get_metadata('local-ipv4')
-                self._once.append('local_ip')
-            except:
-                pass
 
         logger.info('RETURN %s', self._local_ip)
         logger.info('END local_ip')
@@ -101,16 +97,15 @@ class InstanceMetadata(object):
     def tags(self):
         logger.info('START tags')
 
-        if not 'tags' in self._once:
-            try:
+        if self._tags is None:
+            if self._mock:
+                self._tags = kwargs.get('tags', self.DEFAULT_TAGS)
+            else:
                 filters = [{'Name': 'instance-id', 'Values': [self.instance_id]}]
                 res = self._client.describe_instances(Filters=filters)
                 logger.info('SET res=%s', '{}'.format(res))
-                self._tags.update({t['Key']: t['Value']
-                                   for t in res['Reservations'][0]['Instances'][0]['Tags']})
-                self._once.append('tags')
-            except:
-                pass
+                self._tags = {t['Key']: t['Value']
+                              for t in res['Reservations'][0]['Instances'][0]['Tags']}
 
         logger.info('RETURN %s', self._tags)
         logger.info('END tags')
@@ -146,38 +141,25 @@ class InstanceMetadata(object):
         logger.info('END roles')
         return roles
 
-    def __init__(self, client=None,
-                 tags=DEFAULT_TAGS,
-                 instance_id=DEFAULT_INSTANCE_ID,
-                 public_ip=DEFAULT_PUBLIC_IP,
-                 local_ip=DEFAULT_LOCAL_IP,
-                 timeout=0.5):
+    def __init__(self, client=None, mock=False, **kwargs):
         logger.info('START __init__')
-        logger.info('INPUT client=%s, tags=%s, instance_id=%s, public_ip=%s, local_ip=%s, timeout=%s',
-                    client, tags, instance_id, public_ip, local_ip, timeout)
+        logger.info('INPUT client=%s, mock=%s, kwargs=%s', client, mock, kwargs)
 
         self._client = client if isinstance(client, BaseClient) else get_client('ec2')
-        self._tags = tags
-        self._instance_id = instance_id
-        self._public_ip = public_ip
-        self._local_ip = local_ip
-        self.timeout = timeout
+        self._mock = mock
+        self._kwargs = kwargs
 
-        logger.info('SET self._client=%s', '{}'.format(self._client.__dict__))
-        logger.info('SET self._tags=%s', self._tags)
-        logger.info('SET self._instance_id=%s', self._instance_id)
-        logger.info('SET self._public_ip=%s', self._public_ip)
-        logger.info('SET self._local_ip=%s', self._local_ip)
-        logger.info('SET self.timeout=%s', self.timeout)
         logger.info('END __init__')
 
-    @retries()
     def get_metadata(self, category):
         logger.info('START get_metadata')
         logger.info('INPUT category=%s', category)
 
-        res = requests.get(self.EC2_META_DATA_URL % category,
-                           timeout=self.timeout)
+        try:
+            res = requests.get(self.EC2_META_DATA_URL % category)
+        except Exception:
+            time.sleep(1)
+            res = self.get_metadata(category)
 
         logger.info('SET res=%s', '{}'.format(res.__dict__))
         logger.info('RETURN %s', res.text)
