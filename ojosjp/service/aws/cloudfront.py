@@ -19,8 +19,8 @@ class Cloudfront(object):
     def __init__(self, distribution_id, aws_access_key_id=None, aws_secret_access_key=None,
                  region_name=None):
         logger.info('START __init__')
-        logger.info('INPUT aws_access_key_id=%s, aws_secret_access_key=%s, region_name=%s, backoff=%s',
-                    aws_access_key_id, aws_secret_access_key, region_name, backoff)
+        logger.info('INPUT aws_access_key_id=%s, aws_secret_access_key=%s, region_name=%s, distribution_id=%s',
+                    aws_access_key_id, aws_secret_access_key, region_name, distribution_id)
 
         self._distribution_id = distribution_id
         self._client = get_client(service_name='cloudfront',
