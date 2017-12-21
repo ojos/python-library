@@ -105,7 +105,7 @@ class S3(object):
 
     @retries()
     def copy(self, source_key, target_key, acl=S3_ACL):
-        logger.info('START put_object')
+        logger.info('START copy')
         logger.info('INPUT source_key=%s, target_key=%s', source_key, target_key)
 
         res = self._client.copy(CopySource={'Bucket': self._bucket,
@@ -115,5 +115,5 @@ class S3(object):
                                 ExtraArgs={'ACL': acl})
 
         logger.info('RETURN %s', '{}'.format(res))
-        logger.info('END put_object')
+        logger.info('END copy')
         return res
