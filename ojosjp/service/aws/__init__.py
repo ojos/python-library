@@ -5,4 +5,4 @@ from .ec2 import InstanceMetadata
 from .s3 import S3
 from .sns import SNS
 
-__all__ = ['Lambda', 'DynamoDB', 'InstanceMetadata', 'S3', 'SNS']
+__all__ = ['Lambda', 'DynamoDB', 'InstanceMetadata', 'S3', 'SNS', 'Cloudfront']
