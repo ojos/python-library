@@ -81,17 +81,18 @@ class S3(object):
         return context
 
     @retries()
-    def put_object(self, key, body, content_type, cache_control, acl=S3_ACL, compress=False):
+    def put_object(self, key, body, content_type, cache_control=None, acl=S3_ACL, compress=False, **kwargs):
         logger.info('START put_object')
         logger.info('INPUT key=%s, body=%s, content_type=%s, cache_control=%s, acl=%s, compress=%s',
                     key, body, content_type, cache_control, acl, compress)
 
-        kwargs = {'Bucket': self._bucket,
-                  'ACL': acl,
-                  'ContentType': content_type,
-                  'CacheControl': cache_control,
-                  'Key': key,
-                  'Body': body}
+        kwargs.update({'Bucket': self._bucket,
+                       'ACL': acl,
+                       'ContentType': content_type,
+                       'Key': key,
+                       'Body': body})
+        if cache_control is not None:
+            kwargs['CacheControl'] = cache_control
         logger.info('SET kwargs=%s', kwargs)
 
         if compress:
