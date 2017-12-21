@@ -33,13 +33,13 @@ class Cloudfront(object):
         logger.info('END __init__')
 
     @retries()
-    def create_invalidation(self, quantity=None, *items):
+    def create_invalidation(self, quantity, items):
         logger.info('START create_invalidation')
         logger.info('INPUT quantity=%s, items=%s', quantity, items)
 
         invalidation_batch = {
             'Paths': {
-                'Quantity': len(items) if quantity is None else quantity,
+                'Quantity': quantity,
                 'Items': items
             },
             'CallerReference': str(time.time())
