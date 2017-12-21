@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from .awslambda import Lambda
+from .cloudfront import Cloudfront
 from .dynamodb import DynamoDB
 from .ec2 import InstanceMetadata
 from .s3 import S3
