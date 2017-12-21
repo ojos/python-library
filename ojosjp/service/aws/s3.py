@@ -19,6 +19,7 @@ FALID_COPY_OBJECT = 'FAILD COPY'
 
 logger = getLogger(__name__)
 
+
 class S3(object):
     S3_ACL = 'public-read'
 
@@ -40,7 +41,6 @@ class S3(object):
         logger.info('SET self._bucket=%s', self._bucket)
         logger.info('SET self._client=%s', '{}'.format(self._client.__dict__))
         logger.info('END __init__')
-
 
     @retries()
     def get_object(self, key):
@@ -104,14 +104,15 @@ class S3(object):
         return res
 
     @retries()
-    def copy(self, source_key, target_key):
+    def copy(self, source_key, target_key, acl=S3_ACL):
         logger.info('START put_object')
         logger.info('INPUT source_key=%s, target_key=%s', source_key, target_key)
 
         res = self._client.copy(CopySource={'Bucket': self._bucket,
-                                      'Key': source_key},
+                                            'Key': source_key},
                                 Bucket=self._bucket,
-                                Key=target_key)
+                                Key=target_key,
+                                ExtraArgs={'ACL': acl})
 
         logger.info('RETURN %s', '{}'.format(res))
         logger.info('END put_object')
