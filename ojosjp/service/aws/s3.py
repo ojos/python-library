@@ -53,18 +53,34 @@ class S3(object):
         logger.info('END get_object')
         return obj
 
-    def _expand_text(self, context):
-        logger.info('START _expand_text')
-        logger.info('INPUT context=%s', '{}'.format(context.__dict__))
+    @retries()
+    def get_text(self, key):
+        logger.info('START get_text')
 
-        bytesio = BytesIO(context)
+        obj = self.get_object(key=key)
+        body = obj['Body'].read()
+        content_encoding = obj.get('ContentEncoding', None)
+        if content_encoding == 'gzip':
+            text = self._expand_text(body)
+        else:
+            text = body
+
+        logger.info('RETURN %s', text)
+        logger.info('END get_text')
+        return text.decode()
+
+    def _expand_text(self, text):
+        logger.info('START _expand_text')
+        logger.info('INPUT text=%s', text)
+
+        bytesio = BytesIO(text)
         gzip_file = gzip.GzipFile(fileobj=bytesio, mode='rb')
-        context = gzip_file.read()
+        text = gzip_file.read()
         gzip_file.close()
 
-        logger.info('RETURN %s', context)
+        logger.info('RETURN %s', text)
         logger.info('END _expand_text')
-        return context
+        return text
 
     def _compress_text(self, context):
         logger.info('START _compress_text')
