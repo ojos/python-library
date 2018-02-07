@@ -14,6 +14,7 @@ FALID_SCAN = 'FAILD SCAN'
 
 logger = getLogger(__name__)
 
+
 class DynamoDB(object):
     _client = None
     _table = None
@@ -44,7 +45,6 @@ class DynamoDB(object):
 
         return self._deserializer
 
-
     def __init__(self, table, aws_access_key_id=None, aws_secret_access_key=None,
                  region_name=None):
         logger.info('START __init__')
@@ -60,6 +60,40 @@ class DynamoDB(object):
         logger.info('SET self._table=%s', self._table)
         logger.info('SET self._client=%s', '{}'.format(self._client.__dict__))
         logger.info('END __init__')
+
+    @retries()
+    def get_item(self, key):
+        logger.info('START get_item')
+        logger.info('INPUT key=%s', key)
+
+        res = self._client.get_item(TableName=self._table,
+                                    Key=self.serializer.serialize(key)['M'])
+
+        res['Item'] = self.deserializer.deserialize({'M': res['Item']})
+
+        logger.info('SET %s', '{}'.format(res))
+        logger.info('END get_item')
+        return res
+
+    @retries()
+    def update_item(self, key, expression, names, values):
+        logger.info('START update_item')
+        logger.info('INPUT key=%s, expression=%s, names=%s, values=%s',
+                    key, expression, names, values)
+
+        res = self._client.update_item(TableName=self._table,
+                                       Key=self.serializer.serialize(key)['M'],
+                                       UpdateExpression=expression,
+                                       ExpressionAttributeNames=names,
+                                       ExpressionAttributeValues=self.serializer.serialize(values)[
+                                           'M'],
+                                       ReturnValues='UPDATED_NEW')
+
+        res['Attributes'] = self.deserializer.deserialize({'M': res['Attributes']})
+
+        logger.info('SET %s', '{}'.format(res))
+        logger.info('END update_item')
+        return res
 
     @retries()
     def put_item(self, item):
