@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from .athena import Athena
 from .awslambda import Lambda
 from .cloudfront import Cloudfront
 from .dynamodb import DynamoDB

@@ -19,7 +19,6 @@ logger = getLogger(__name__)
 
 class DynamoDB(object):
     _client = None
-    _table = None
     _serializer = None
     _deserializer = None
 
