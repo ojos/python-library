@@ -139,7 +139,7 @@ class InstanceMetadata(object):
 
     def __init__(self, client=None, max_tries=0, **kwargs):
         logger.info('START __init__')
-        logger.info('INPUT client=%s, mock=%s, kwargs=%s', client, mock, kwargs)
+        logger.info('INPUT client=%s, max_tries=%d, kwargs=%s', client, max_tries, kwargs)
 
         self._client = client if isinstance(client, BaseClient) else get_client('ec2')
         self._max_tries = max_tries
@@ -153,10 +153,11 @@ class InstanceMetadata(object):
 
         timeout = 1
         tries = 0
-        while:
+        while True:
             try:
                 res = requests.get(self.EC2_META_DATA_URL % category,
                                    timeout=timeout)
+                break
             except Exception as e:
                 timeout *= 2
                 tries += 1
@@ -172,10 +173,11 @@ class InstanceMetadata(object):
         filters = [{'Name': 'instance-id', 'Values': [instance_id]}]
         timeout = 1
         tries = 0
-        while:
+        while True:
             try:
                 res = self._client.describe_instances(Filters=filters)
                 logger.info('SET res=%s', '{}'.format(res))
+                break
             except Exception as e:
                 time.sleep(timeout)
                 timeout *= 2
