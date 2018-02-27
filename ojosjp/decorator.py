@@ -7,6 +7,7 @@ from logging import getLogger
 
 logger = getLogger(__name__)
 
+
 def retry_handler(tries_remaining, exception, delay):
     logger.warning("Caught '%s', %d tries remaining, sleeping for %s seconds",
                    exception, tries_remaining, delay)
@@ -34,13 +35,14 @@ def retries(max_tries=3, delay=1, backoff=2, exceptions=(Exception,), hook=retry
         return f2
     return dec
 
-def error_catch(error_func, exception=(Exception,)):
+
+def error_catch(error_func):
     def _error_response(func):
         def wrapper(self, *args, **kwargs):
             try:
                 return func(self, *args, **kwargs)
-            except exceptions as e:
+            except Exception as e:
                 logger.exception('Error %s', e)
-                return error_func(exception)
+                return error_func(e)
         return wrapper
     return _error_response
