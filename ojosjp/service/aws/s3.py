@@ -134,3 +134,14 @@ class S3(object):
         logger.info('RETURN %s', '{}'.format(res))
         logger.info('END copy')
         return res
+
+    @retries()
+    def delete_object(self, key):
+        logger.info('START delete_object')
+
+        obj = self._client.delete_object(Bucket=self._bucket,
+                                         Key=key)
+
+        logger.info('RETURN %s', '{}'.format(obj))
+        logger.info('END delete_object')
+        return obj
