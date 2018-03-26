@@ -3,7 +3,7 @@ from .athena import Athena
 from .awslambda import Lambda
 from .cloudfront import Cloudfront
 from .dynamodb import DynamoDB
-from .ec2 import InstanceMetadata
+from .ec2 import Ec2, InstanceMetadata
 from .s3 import S3
 from .sns import SNS
 
