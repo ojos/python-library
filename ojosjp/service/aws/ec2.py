@@ -13,10 +13,55 @@ from logging import getLogger
 
 from botocore.client import BaseClient
 
+from ...decorator import retries
 from .core import get_client
 
-
 logger = getLogger(__name__)
+
+
+class Ec2(object):
+    _client = None
+
+    def __init__(self, aws_access_key_id=None, aws_secret_access_key=None, region_name=None):
+        logger.info('START __init__')
+        logger.info('INPUT aws_access_key_id=%s, aws_secret_access_key=%s, region_name=%s',
+                    aws_access_key_id, aws_secret_access_key, region_name)
+
+        self._client = get_client(service_name='ec2',
+                                  aws_access_key_id=aws_access_key_id,
+                                  aws_secret_access_key=aws_secret_access_key,
+                                  region_name=region_name)
+
+        logger.info('SET self._client=%s', '{}'.format(self._client.__dict__))
+        logger.info('END __init__')
+
+    @retries()
+    def describe_instances(self, filters, **kwargs):
+        res = self._client.describe_instances(Filters=filters, **kwargs)
+        return res
+
+    @retries()
+    def run_instance(self, image_id, key_name, security_group_ids, subnet_id, tags,
+                     minimum=1, maximum=1, instance_type='t2.micro', **kwargs):
+        res = self._client.run_instances(ImageId=image_id,
+                                         KeyName=key_name,
+                                         SecurityGroupIds=security_group_ids,
+                                         SubnetId=subnet_id,
+                                         TagSpecifications=[{
+                                             'ResourceType': 'instance',
+                                             'Tags':         tags
+                                         }],
+                                         MinCount=minimum,
+                                         MaxCount=maximum,
+                                         InstanceType=instance_type,
+                                         **kwargs)
+        return res
+
+    @retries()
+    def terminate_instances(self, instance_ids, **kwargs):
+        res = self._client.terminate_instance(InstanceIds=instance_ids,
+                                              **kwargs)
+        return res
 
 
 class InstanceMetadata(object):
@@ -137,32 +182,22 @@ class InstanceMetadata(object):
         logger.info('END roles')
         return roles
 
-    def __init__(self, client=None, max_tries=0, **kwargs):
+    def __init__(self, client=None, **kwargs):
         logger.info('START __init__')
-        logger.info('INPUT client=%s, max_tries=%d, kwargs=%s', client, max_tries, kwargs)
+        logger.info('INPUT client=%s, kwargs=%s', client, kwargs)
 
-        self._client = client if isinstance(client, BaseClient) else get_client('ec2')
-        self._max_tries = max_tries
+        self._client = client if isinstance(client, Ec2) else Ec2()
         self._kwargs = kwargs
 
         logger.info('END __init__')
 
+    @retries()
     def get_metadata(self, category):
         logger.info('START get_metadata')
         logger.info('INPUT category=%s', category)
 
-        timeout = 1
-        tries = 0
-        while True:
-            try:
-                res = requests.get(self.EC2_META_DATA_URL % category,
-                                   timeout=timeout)
-                break
-            except Exception as e:
-                timeout *= 2
-                tries += 1
-                if self._max_tries != 0 and tries >= self._max_tries:
-                    raise e
+        res = requests.get(self.EC2_META_DATA_URL % category,
+                           timeout=1)
 
         logger.info('SET res=%s', '{}'.format(res.__dict__))
         logger.info('RETURN %s', res.text)
@@ -171,19 +206,7 @@ class InstanceMetadata(object):
 
     def _get_tags(self, instance_id):
         filters = [{'Name': 'instance-id', 'Values': [instance_id]}]
-        timeout = 1
-        tries = 0
-        while True:
-            try:
-                res = self._client.describe_instances(Filters=filters)
-                logger.info('SET res=%s', '{}'.format(res))
-                break
-            except Exception as e:
-                time.sleep(timeout)
-                timeout *= 2
-                tries += 1
-                if self._max_tries != 0 and tries >= self._max_tries:
-                    raise e
+        res = self._client.describe_instances(Filters=filters)
 
         tags = {t['Key']: t['Value']
                 for t in res['Reservations'][0]['Instances'][0]['Tags']}
