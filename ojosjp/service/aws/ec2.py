@@ -37,12 +37,15 @@ class Ec2(object):
 
     @retries()
     def describe_instances(self, filters, **kwargs):
+        logger.info('START describe_instances')
         res = self._client.describe_instances(Filters=filters, **kwargs)
+        logger.info('END describe_instances')
         return res
 
     @retries()
     def run_instance(self, image_id, key_name, security_group_ids, subnet_id, tags,
                      minimum=1, maximum=1, instance_type='t2.micro', **kwargs):
+        logger.info('START run_instance')
         res = self._client.run_instances(ImageId=image_id,
                                          KeyName=key_name,
                                          SecurityGroupIds=security_group_ids,
@@ -55,12 +58,15 @@ class Ec2(object):
                                          MaxCount=maximum,
                                          InstanceType=instance_type,
                                          **kwargs)
+        logger.info('END run_instance')
         return res
 
     @retries()
     def terminate_instances(self, instance_ids, **kwargs):
+        logger.info('START terminate_instances')
         res = self._client.terminate_instance(InstanceIds=instance_ids,
                                               **kwargs)
+        logger.info('END terminate_instances')
         return res
 
 
