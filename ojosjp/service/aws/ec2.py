@@ -62,6 +62,14 @@ class Ec2(object):
         return res
 
     @retries()
+    def reboot_instances(self, instance_ids, **kwargs):
+        logger.info('START reboot_instances')
+        res = self._client.reboot_instances(InstanceIds=instance_ids,
+                                            **kwargs)
+        logger.info('END reboot_instances')
+        return res
+
+    @retries()
     def terminate_instances(self, instance_ids, **kwargs):
         logger.info('START terminate_instances')
         res = self._client.terminate_instances(InstanceIds=instance_ids,
